@@ -160,10 +160,10 @@ function New() {
 
   // 仮説フォームデータのハンドラ
   const handleHypoFormDataChange = (event) => {
+    const { name, value } = event.target;
+    const updatedHypoFormData = { ...hypoFormData, [name]: value };
+    setHypoFormData(updatedHypoFormData);
     if (!isComposing) {
-      const { name, value } = event.target;
-      const updatedHypoFormData = { ...hypoFormData, [name]: value };
-      setHypoFormData(updatedHypoFormData);
       ws.send(JSON.stringify({ id: fid, formId: 'hypoForm', data: updatedHypoFormData }));
     }
   };
@@ -174,10 +174,10 @@ function New() {
 
 
   const handleObservationFormDataChange = (event, index) => {
+    const { name, value } = event.target;
+    const updatedObservationFormData = {...observationFormData, [name]: value};
+    setObservationFormData(updatedObservationFormData);
     if(!isComposing) {
-      const { name, value } = event.target;
-      const updatedObservationFormData = {...observationFormData, [name]: value};
-      setObservationFormData(updatedObservationFormData);
       ws.send(JSON.stringify({ id: fid, formId: 'observationForm', data: updatedObservationFormData }));
     }
   };
@@ -187,10 +187,10 @@ function New() {
   };
 
   const handleObservationResultFormDataChange = (event, index) => {
+    const { name, value } = event.target;
+    const updatedObservationResultFormData = {...observationResultFormData, [name]: value};
+    setObservationResultFormData(updatedObservationResultFormData);
     if(!isComposing) {
-      const { name, value } = event.target;
-      const updatedObservationResultFormData = {...observationResultFormData, [name]: value};
-      setObservationResultFormData(updatedObservationResultFormData);
       ws.send(JSON.stringify({ id: fid, formId: 'observationResultForm', data: updatedObservationResultFormData }));
     }
   };
@@ -200,10 +200,10 @@ function New() {
   };
 
   const handleAskDataChange = (event, index) => {
+    const { name, value } = event.target;
+    const updatedAskData = {...askData, [name]: value};
+    setAskData(updatedAskData);
     if(!isComposing) {
-      const { name, value } = event.target;
-      const updatedAskData = {...askData, [name]: value};
-      setAskData(updatedAskData);
       ws.send(JSON.stringify({ id: fid, formId: 'ask', data: updatedAskData }));
     }
   };
@@ -213,10 +213,10 @@ function New() {
   };
 
   const handleAskResultDataChange = (event, index) => {
+    const { name, value } = event.target;
+    const updatedAskResultData = {...askResultData, [name]: value};
+    setAskResultData(updatedAskResultData);
     if (!isComposing) {
-      const { name, value } = event.target;
-      const updatedAskResultData = {...askResultData, [name]: value};
-      setAskResultData(updatedAskResultData);
       ws.send(JSON.stringify({ id: fid, formId: 'askResult', data: updatedAskResultData }));
     }
   };
@@ -263,8 +263,8 @@ function New() {
               className={styles.inputField}
               name="hypoInputField"
               value={hypoFormData.hypoInputField || ''}
-              onChange={handleHypoFormDataChange}
               onCompositionStart={handleCompositionStart}
+              onChange={handleHypoFormDataChange}
               onCompositionEnd={handleHypoFormDataCompositionEnd}
               placeholder="仮説を入力してください"
             />
