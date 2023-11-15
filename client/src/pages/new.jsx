@@ -153,40 +153,66 @@ function New() {
   }
 
   // 仮説フォームデータのハンドラ
-  const handleHypoFormDataChange = (event) => {
+  const handleHypoFormDataSub = (event) => {
     const { name, value } = event.target;
     const updatedHypoFormData = { ...hypoFormData, [name]: value };
     setHypoFormData(updatedHypoFormData);
     ws.send(JSON.stringify({ id: fid, formId: 'hypoForm', data: updatedHypoFormData }));
   };
+  const handleHypoFormDataChange = (event) => {
+    const { name, value } = event.target;
+    const updatedHypoFormData = { ...hypoFormData, [name]: value };
+    setHypoFormData(updatedHypoFormData);
+  };
 
 
-  const handleObservationFormDataChange = (event, index) => {
+  const handleObservationFormDataSub = (event, index) => {
     const { name, value } = event.target;
     const updatedObservationFormData = {...observationFormData, [name]: value};
     setObservationFormData(updatedObservationFormData);
     ws.send(JSON.stringify({ id: fid, formId: 'observationForm', data: updatedObservationFormData }));
   };
+  const handleObservationFormDataChange = (event, index) => {
+    const { name, value } = event.target;
+    const updatedObservationFormData = {...observationFormData, [name]: value};
+    setObservationFormData(updatedObservationFormData);
+  };
 
-  const handleObservationResultFormDataChange = (event, index) => {
+  const handleObservationResultFormDataSub = (event, index) => {
     const { name, value } = event.target;
     const updatedObservationResultFormData = {...observationResultFormData, [name]: value};
     setObservationResultFormData(updatedObservationResultFormData);
     ws.send(JSON.stringify({ id: fid, formId: 'observationResultForm', data: updatedObservationResultFormData }));
   };
+  const handleObservationResultFormDataChange = (event, index) => {
+    const { name, value } = event.target;
+    const updatedObservationResultFormData = {...observationResultFormData, [name]: value};
+    setObservationResultFormData(updatedObservationResultFormData);
+  };
 
-  const handleAskDataChange = (event, index) => {
+  const handleAskDataSub = (event, index) => {
     const { name, value } = event.target;
     const updatedAskData = {...askData, [name]: value};
     setAskData(updatedAskData);
     ws.send(JSON.stringify({ id: fid, formId: 'ask', data: updatedAskData }));
   };
+  const handleAskDataChange = (event, index) => {
+    const { name, value } = event.target;
+    const updatedAskData = {...askData, [name]: value};
+    setAskData(updatedAskData);
+  };
 
-  const handleAskResultDataChange = (event, index) => {
+  const handleAskResultDataSub = (event, index) => {
     const { name, value } = event.target;
     const updatedAskResultData = {...askResultData, [name]: value};
     setAskResultData(updatedAskResultData);
     ws.send(JSON.stringify({ id: fid, formId: 'askResult', data: updatedAskResultData }));
+  };
+  const handleAskResultDataChange = (event, index) => {
+    const { name, value } = event.target;
+    const updatedAskResultData = {...askResultData, [name]: value};
+    setAskResultData(updatedAskResultData);
+    
   };
 
 
@@ -228,6 +254,7 @@ function New() {
               name="hypoInputField"
               value={hypoFormData.hypoInputField || ''}
               onChange={handleHypoFormDataChange}
+              onCompositionEnd={handleHypoFormDataSub}
               placeholder="仮説を入力してください"
             />
           </div>
@@ -241,6 +268,7 @@ function New() {
                   name={`${key}`}
                   value={observationFormData[key] || ''}
                   onChange={(event) => handleObservationFormDataChange(event, index)}
+                  onCompositionEnd={(event) => handleObservationFormDataSub(event, index)}
                   placeholder={`観察内容を記入してください`}
                 ></textarea>
               ))
@@ -257,6 +285,7 @@ function New() {
                   name={`${key}`}
                   value={observationResultFormData[key] || ''}
                   onChange={(event) => handleObservationResultFormDataChange(event, index)}
+                  onCompositionEnd={(event) => handleObservationResultFormDataSub(event, index)}
                   placeholder={`観察結果を記入してください`}
                 ></textarea>
               ))
@@ -273,6 +302,7 @@ function New() {
                   name={`${key}`}
                   value={askData[key] || ''}
                   onChange={(event) => handleAskDataChange(event, index)}
+                  onCompositionEnd={(event) => handleAskDataSub(event, index)}
                   placeholder={`ヒアリングしたい内容を記入してください`}
                 ></textarea>
               ))
@@ -289,6 +319,7 @@ function New() {
                   name={`${key}`}
                   value={askResultData[key] || ''}
                   onChange={(event) => handleAskResultDataChange(event, index)}
+                  onCompositionEnd={(event) => handleAskResultDataSub(event, index)}
                   placeholder={`ヒアリング結果の内容を記入してください`}
                 ></textarea>
               ))
