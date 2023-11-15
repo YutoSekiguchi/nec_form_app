@@ -1,51 +1,80 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../styles/Top.module.css';
 import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
-import { groupNumberAtom, passwordAtom } from '../jotai/info';
+import { groupNumberAtom } from '../jotai/info';
+import { createTeam, getTeams } from '../services/team';
+import getTodayDateString from '../modules/generate_today_date';
+import Cookies from 'js-cookie';
 
 function Top() {
   const navigate = useNavigate();
-  const [, setPassword] = useAtom(passwordAtom);
   const [, setGroupNumber] = useAtom(groupNumberAtom);
-  
 
   const [formData, setFormData] = useState({
     password: '',
     groupNumber: ''
   });
+  const [groups, setGroups] = useState(null);
 
   const handleChange = (e) => {
+    console.log(e.target.name);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-
   
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: ログイン処理
 
-    setPassword(formData.password);
+    if (formData.password !== getTodayDateString()) {
+      alert('パスワードが違います');
+      return;
+    }
+
+    if (formData.groupNumber === '' || formData.groupNumber === null) {
+      alert('グループ番号を入力してください');
+      return;
+    }
+
+    if (groups !== null) {
+      for(var i = 0; i < groups.length; i++) {
+        if (groups[i].Name === `${formData.groupNumber}`) {
+          setGroupNumber(formData.groupNumber);
+          navigate(`/home`);
+          Cookies.set('login', "ok", { expires: 7 });
+          return;
+        }
+      }
+    }
+
+    const teamData = {
+      name: `${formData.groupNumber}`,
+    }
+    const res = await createTeam(teamData);
+    if(res === null) {
+      alert("作成に失敗しました")
+      return;
+    }
     setGroupNumber(formData.groupNumber);
-
+    Cookies.set('login', "ok", { expires: 7 });
     navigate(`/home`);
   };
+
+  useEffect(() => {
+    const getAllGroups = async () => {
+      const res = await getTeams();
+      if (res === null) {
+        return;
+      }
+      setGroups(res);
+    }
+    getAllGroups();
+  }, []);
+  
 
   return (
     <div className='main'>
       <div className={styles.formContainer}>
-        <form onSubmit={handleSubmit}>
-          {/* <div className={styles.formGroup}>
-            <label className={styles.label}>ユーザ名:</label>
-            <input 
-              type="text" 
-              name="username" 
-              value={formData.username} 
-              onChange={handleChange} 
-              className={styles.input} 
-              placeholder="例: Yamada Taro"
-            />
-          </div> */}
-
+        <form>
           <div className={styles.formGroup}>
             <label className={styles.label}>パスワード:</label>
             <input 
@@ -70,7 +99,7 @@ function Top() {
             />
           </div>
           <div className='w-full text-center'>
-            <button type="submit" className={styles.button}>ログイン</button>
+            <button type="submit" className={styles.button} onClick={handleSubmit}>ログイン</button>
           </div>
         </form>
       </div>

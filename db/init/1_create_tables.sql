@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS teams (
 CREATE TABLE IF NOT EXISTS forms (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   long_id TEXT NOT NULL,
-  tid INT NOT NULL,
+  t_id INT NOT NULL,
   hypothesis TEXT NOT NULL,
   observation TEXT NOT NULL,
   observation_result TEXT NOT NULL,

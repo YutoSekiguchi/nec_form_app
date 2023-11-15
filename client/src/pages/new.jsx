@@ -5,6 +5,10 @@ import Dialog from '../components/common/dialog';
 import { useAtom } from 'jotai';
 import { groupNumberAtom } from '../jotai/info';
 import { generateRandomString } from '../modules/generate_radom_string';
+import Cookies from 'js-cookie';
+import { getTeams } from '../services/team';
+import { createForm } from '../services/form';
+import { useSearchParams } from 'react-router-dom';
 
 const wsurl = process.env.REACT_APP_WS_URL;
 
@@ -17,7 +21,10 @@ function New() {
   const [askResultData, setAskResultData] = useState({askTextResultAreaField1: "", askTextResultAreaField2: "", askTextResultAreaField3: ""});
   const [firstLoad, setFirstLoad] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [tid, setTid] = useState(null);
   const [groupNumber, ] = useAtom(groupNumberAtom)
+
+  const [searchParams] = useSearchParams();
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
@@ -25,21 +32,40 @@ function New() {
 
 
   const navigate = useNavigate();
-
+  
   // WebSocket接続の状態
   const [ws, setWs] = useState(null);
 
   useEffect(() => {
     // WebSocket接続
     
-    console.log(wsurl)
+    const isLogin = Cookies.get('login');
+    if (isLogin !== "ok") {
+      navigate(`/`);
+      return;
+    }
+
+    const getTID = async () => {
+      const res = await getTeams();
+      if (res === null) {
+        navigate(`/`);
+        return;
+      }
+      for (var i = 0; i < res.length; i++) {
+        if (res[i].Name === searchParams.get("groupNumber")) {
+          setTid(res[i].ID);
+        }
+      }
+    }
+
+    getTID();
+    
     const socket = new WebSocket(wsurl);
     socket.onmessage = event => {
       // サーバーからのデータを適切な状態に設定
       const message = JSON.parse(event.data);
       const { id, formId, data } = message;
       // 初期データの処理
-      console.log(message)
       if (firstLoad === false) {
         Object.keys(message.data).forEach(key => {
           if (key === fid && message["data"][key] !== undefined) {
@@ -81,7 +107,7 @@ function New() {
 
     // コンポーネントのアンマウント時にWebSocket接続を閉じる
     return () => socket.close();
-  }, [firstLoad, fid]);
+  }, [firstLoad, fid, navigate, groupNumber, searchParams]);
 
   const scrollToTop = () => {
     window.scrollTo({
@@ -90,19 +116,37 @@ function New() {
     });
   };
 
-  const handleSubmit = () => {
-
-
+  const handleSubmit = async() => {
+    // APIに送るデータの作成
+    // 配列は文字列にする
+    await ws.send(JSON.stringify({ id: fid, formId: 'hypoForm', data: {} }));
+    await ws.send(JSON.stringify({ id: fid, formId: 'observationForm', data: {observationTextAreaField1: "", observationTextAreaField2: "", observationTextAreaField3: ""} }));
+    await ws.send(JSON.stringify({ id: fid, formId: 'observationResultForm', data: {observationResultTextAreaField1: "", observationResultTextAreaField2: "", observationResultTextAreaField3: ""} }));
+    await ws.send(JSON.stringify({ id: fid, formId: 'ask', data: {askTextAreaField1: "", askTextAreaField2: "", askTextAreaField3: ""} }));
+    await ws.send(JSON.stringify({ id: fid, formId: 'askResult', data: {askTextResultAreaField1: "", askTextResultAreaField2: "", askTextResultAreaField3: ""} }));
+    const postFormData = {
+      LongID: fid,
+      TID: tid,
+      Hypothesis: hypoFormData.hypoInputField,
+      Observation: JSON.stringify(observationFormData),
+      ObservationResult: JSON.stringify(observationResultFormData),
+      Hearing: JSON.stringify(askData),
+      HearingResult: JSON.stringify(askResultData),
+    };
+    
+    // フォームデータを送信
+    const res = await createForm(postFormData);
+    if (res === null) {
+      alert("送信に失敗しました");
+      return;
+    }
+    
+    
     setIsDialogOpen(true);
 
-    ws.send(JSON.stringify({ id: fid, formId: 'hypoForm', data: {} }));
-    ws.send(JSON.stringify({ id: fid, formId: 'observationForm', data: {observationTextAreaField1: "", observationTextAreaField2: "", observationTextAreaField3: ""} }));
-    ws.send(JSON.stringify({ id: fid, formId: 'observationResultForm', data: {observationResultTextAreaField1: "", observationResultTextAreaField2: "", observationResultTextAreaField3: ""} }));
-    ws.send(JSON.stringify({ id: fid, formId: 'ask', data: {askTextAreaField1: "", askTextAreaField2: "", askTextAreaField3: ""} }));
-    ws.send(JSON.stringify({ id: fid, formId: 'askResult', data: {askTextResultAreaField1: "", askTextResultAreaField2: "", askTextResultAreaField3: ""} }));
-    
     scrollToTop();
-    navigate(`/new?groupNumber=${groupNumber}&id=${generateRandomString()}`);
+    
+    navigate(`/new?groupNumber=${searchParams.get("groupNumber")}&id=${generateRandomString()}`);
     window.setTimeout(() => {
       setIsDialogOpen(false);
     }, 1500);

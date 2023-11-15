@@ -13,10 +13,10 @@ import (
 type FormService struct {}
 
 // 認証機能の追加
-func (s FormService) Authenticate(authHeader string, db *gorm.DB, c echo.Context) error {
+func (s FormService) Authenticate(authHeader string, db *gorm.DB, c echo.Context) (*Form, error) {
 	// Authorizationヘッダが空または"Basic "で始まらない場合は認証エラー
 	if authHeader == "" || !strings.HasPrefix(authHeader, "Basic ") {
-		return c.JSON(http.StatusUnauthorized, map[string]string{ 	
+		return nil, c.JSON(http.StatusUnauthorized, map[string]string{ 	
 			"message":"Authentication Failed",
 		})
 	}
@@ -25,7 +25,7 @@ func (s FormService) Authenticate(authHeader string, db *gorm.DB, c echo.Context
 	authValue := strings.TrimPrefix(authHeader, "Basic ")
 	decodedAuth, err := base64.StdEncoding.DecodeString(authValue)
 	if err != nil {
-		return c.JSON(http.StatusUnauthorized, map[string]string{ 	
+		return nil, c.JSON(http.StatusUnauthorized, map[string]string{ 	
 			"message":"Authentication Failed",
 		})
 	}
@@ -33,32 +33,35 @@ func (s FormService) Authenticate(authHeader string, db *gorm.DB, c echo.Context
 	appPass := string(decodedAuth)
 	APP_PASS := os.Getenv("APP_PASS")
 	if appPass != APP_PASS {
-		return c.JSON(http.StatusUnauthorized, map[string]string{
+		return nil, c.JSON(http.StatusUnauthorized, map[string]string{
 			"message": "Authentication Failed",
 		})
 	}
-	return nil
+	return &Form{}, nil
 }
 
 // GET
 // 全てのフォームの取得
 func (s FormService) GetAllForms(db *gorm.DB, c echo.Context) ([]Form, error) {
 	authHeader := c.Request().Header.Get("Authorization")
-	if err := s.Authenticate(authHeader, db, c); err != nil {
+	f, err := s.Authenticate(authHeader, db, c)
+	if f == nil {
 		return nil, err
+	} else {
+		var forms []Form
+		if err := db.Find(&forms).Error; err != nil {
+			return nil, err
+		}
+		return forms, nil
 	}
 
-	var forms []Form
-	if err := db.Find(&forms).Error; err != nil {
-		return nil, err
-	}
-	return forms, nil
 }
 
 // idを指定してフォームの取得
 func (s FormService) GetFormById(db *gorm.DB, c echo.Context) (Form, error) {
 	authHeader := c.Request().Header.Get("Authorization")
-	if err := s.Authenticate(authHeader, db, c); err != nil {
+	f, err := s.Authenticate(authHeader, db, c)
+	if f == nil {
 		return Form{}, err
 	}
 
@@ -74,7 +77,8 @@ func (s FormService) GetFormById(db *gorm.DB, c echo.Context) (Form, error) {
 // TIDを指定してフォームの取得
 func (s FormService) GetFormByTID(db *gorm.DB, c echo.Context) ([]Form, error) {
 	authHeader := c.Request().Header.Get("Authorization")
-	if err := s.Authenticate(authHeader, db, c); err != nil {
+	f, err := s.Authenticate(authHeader, db, c)
+	if f == nil {
 		return nil, err
 	}
 
@@ -89,7 +93,8 @@ func (s FormService) GetFormByTID(db *gorm.DB, c echo.Context) ([]Form, error) {
 // LongIDを指定してフォームの取得
 func (s FormService) GetFormByLongID(db *gorm.DB, c echo.Context) (Form, error) {
 	authHeader := c.Request().Header.Get("Authorization")
-	if err := s.Authenticate(authHeader, db, c); err != nil {
+	f, err := s.Authenticate(authHeader, db, c)
+	if f == nil {
 		return Form{}, err
 	}
 	
@@ -105,7 +110,8 @@ func (s FormService) GetFormByLongID(db *gorm.DB, c echo.Context) (Form, error) 
 // フォームの作成
 func (s FormService) CreateForm(db *gorm.DB, c echo.Context) (Form, error) {
 	authHeader := c.Request().Header.Get("Authorization")
-	if err := s.Authenticate(authHeader, db, c); err != nil {
+	f, err := s.Authenticate(authHeader, db, c)
+	if f == nil {
 		return Form{}, err
 	}
 
@@ -113,6 +119,16 @@ func (s FormService) CreateForm(db *gorm.DB, c echo.Context) (Form, error) {
 	if err := c.Bind(&form); err != nil {
 		return Form{}, err
 	}
+
+	// もしすでに同じlong_idが存在したら上書きする
+	var oldForm Form
+	if err := db.Where("long_id = ?", form.LongID).Find(&oldForm).Error; err != nil {
+		return Form{}, err
+	}
+	if oldForm.ID != 0 {
+		form.ID = oldForm.ID
+	}
+
 	if err := db.Create(&form).Error; err != nil {
 		return Form{}, err
 	}
@@ -123,7 +139,8 @@ func (s FormService) CreateForm(db *gorm.DB, c echo.Context) (Form, error) {
 // idを指定してフォームの更新
 func (s FormService) UpdateFormById(db *gorm.DB, c echo.Context) (Form, error) {
 	authHeader := c.Request().Header.Get("Authorization")
-	if err := s.Authenticate(authHeader, db, c); err != nil {
+	f, err := s.Authenticate(authHeader, db, c)
+	if f == nil {
 		return Form{}, err
 	}
 
@@ -143,7 +160,8 @@ func (s FormService) UpdateFormById(db *gorm.DB, c echo.Context) (Form, error) {
 // idを指定してフォームの削除
 func (s FormService) DeleteFormById(db *gorm.DB, c echo.Context) error {
 	authHeader := c.Request().Header.Get("Authorization")
-	if err := s.Authenticate(authHeader, db, c); err != nil {
+	f, err := s.Authenticate(authHeader, db, c)
+	if f == nil {
 		return err
 	}
 
