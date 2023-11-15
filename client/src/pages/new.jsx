@@ -170,6 +170,10 @@ function New() {
   const handleHypoFormDataCompositionEnd = (event) => {
     setIsComposing(false);
     handleHypoFormDataChange(event)
+    const { name, value } = event.target;
+    const updatedHypoFormData = { ...hypoFormData, [name]: value };
+    setHypoFormData(updatedHypoFormData);
+    ws.send(JSON.stringify({ id: fid, formId: 'hypoForm', data: updatedHypoFormData }));
   };
 
 
@@ -183,7 +187,10 @@ function New() {
   };
   const handleObservationFormDataCompositionEnd = (event, index) => {
     setIsComposing(false);
-    handleObservationFormDataChange(event, index)
+    const { name, value } = event.target;
+    const updatedObservationFormData = {...observationFormData, [name]: value};
+    setObservationFormData(updatedObservationFormData);
+    ws.send(JSON.stringify({ id: fid, formId: 'observationForm', data: updatedObservationFormData }));
   };
 
   const handleObservationResultFormDataChange = (event, index) => {
@@ -196,7 +203,10 @@ function New() {
   };
   const handleObservationResultFormDataCompositionEnd = (event, index) => {
     setIsComposing(false);
-    handleObservationResultFormDataChange(event, index)
+    const { name, value } = event.target;
+    const updatedObservationResultFormData = {...observationResultFormData, [name]: value};
+    setObservationResultFormData(updatedObservationResultFormData);
+    ws.send(JSON.stringify({ id: fid, formId: 'observationResultForm', data: updatedObservationResultFormData }));
   };
 
   const handleAskDataChange = (event, index) => {
@@ -209,7 +219,10 @@ function New() {
   };
   const handleAskDataCompositionEnd = (event, index) => {
     setIsComposing(false);
-    handleAskDataChange(event, index)
+    const { name, value } = event.target;
+    const updatedAskData = {...askData, [name]: value};
+    setAskData(updatedAskData);
+    ws.send(JSON.stringify({ id: fid, formId: 'ask', data: updatedAskData }));
   };
 
   const handleAskResultDataChange = (event, index) => {
@@ -222,7 +235,10 @@ function New() {
   };
   const handleAskResultDataCompositionEnd = (event, index) => {
     setIsComposing(false);
-    handleAskResultDataChange(event, index)
+    const { name, value } = event.target;
+    const updatedAskResultData = {...askResultData, [name]: value};
+    setAskResultData(updatedAskResultData);
+    ws.send(JSON.stringify({ id: fid, formId: 'askResult', data: updatedAskResultData }));
   };
 
 
