@@ -127,6 +127,10 @@ func (s FormService) CreateForm(db *gorm.DB, c echo.Context) (Form, error) {
 	}
 	if oldForm.ID != 0 {
 		form.ID = oldForm.ID
+		if err := db.Model(&form).Where("id = ?", form.ID).Updates(&form).Error; err != nil {
+			return Form{}, err
+		}
+		return form, nil
 	}
 
 	if err := db.Create(&form).Error; err != nil {
