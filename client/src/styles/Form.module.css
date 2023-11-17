@@ -35,6 +35,17 @@
   min-height: 30px;
 }
 
+.buttonBack {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  background-color: #aaa;
+  color: white;
+  margin-right: 2rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
 .buttonSubmit {
   padding: 10px 20px;
   border: none;

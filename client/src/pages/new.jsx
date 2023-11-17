@@ -140,6 +140,10 @@ function New() {
     });
   };
 
+  const handleBack = () => {
+    navigate(`/home`);
+  }
+
   const handleSubmit = async() => {
     // APIに送るデータの作成
     // 配列は文字列にする
@@ -381,6 +385,9 @@ function New() {
             }
             <button onClick={addAskResultField}>+</button>
           </div>
+          <button className={styles.buttonBack} onClick={handleBack}>
+            一覧に戻る
+          </button>
           <button className={styles.buttonSubmit} onClick={handleSubmit}>
             送信
           </button>
