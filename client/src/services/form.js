@@ -26,8 +26,9 @@ export const getForms = async () => {
 }
 
 // longidで取得
-export const getForm = async (longid) => {
+export const getFormByLongId = async (longid) => {
   const url = `${FORM_API_URL}/longid/${longid}`;
+
   try {
     const base64Credentials = btoa(APP_PASS);
     const response = await fetch(url, {

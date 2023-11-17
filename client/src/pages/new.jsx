@@ -7,7 +7,7 @@ import { groupNumberAtom } from '../jotai/info';
 import { generateRandomString } from '../modules/generate_radom_string';
 import Cookies from 'js-cookie';
 import { getTeams } from '../services/team';
-import { createForm } from '../services/form';
+import { createForm, getFormByLongId } from '../services/form';
 import { useSearchParams } from 'react-router-dom';
 
 const wsurl = process.env.REACT_APP_WS_URL;
@@ -58,7 +58,31 @@ function New() {
       }
     }
 
+    const getFormData = async () => {
+      const res = await getFormByLongId(fid);
+      if (res === null || res === undefined) {
+        return;
+      }
+      setHypoFormData({hypoInputField: res.Hypothesis});
+      if (res.Observation !== undefined && res.Observation !==  "") {
+        setObservationFormData(JSON.parse(res.Observation));
+      }
+      if (res.ObservationResult !== undefined && res.ObservationResult !== "") {
+        setObservationResultFormData(JSON.parse(res.ObservationResult));
+      }
+      if (res.Hearing !== undefined && res.Hearing !== "") {
+        setAskData(JSON.parse(res.Hearing));
+      }
+      if (res.HearingResult !== undefined && res.HearingResult !== "") {
+        setAskResultData(JSON.parse(res.HearingResult));
+      }
+    }
+
     getTID();
+    if (fid !== null) {
+      getFormData();
+    }
+
     
     const socket = new WebSocket(wsurl);
     socket.onmessage = event => {
