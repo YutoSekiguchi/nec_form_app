@@ -91,17 +91,17 @@ func (s FormService) GetFormByTID(db *gorm.DB, c echo.Context) ([]Form, error) {
 }
 
 // LongIDを指定してフォームの取得
-func (s FormService) GetFormByLongID(db *gorm.DB, c echo.Context) (Form, error) {
+func (s FormService) GetFormByLongID(db *gorm.DB, c echo.Context) (*Form, error) {
 	authHeader := c.Request().Header.Get("Authorization")
 	f, err := s.Authenticate(authHeader, db, c)
 	if f == nil {
-		return Form{}, err
+		return nil, err
 	}
 	
-	longID := c.Param("longID")
-	var form Form
+	longID := c.Param("longid")
+	form := new(Form)
 	if err := db.Where("long_id = ?", longID).Find(&form).Error; err != nil {
-		return Form{}, err
+		return nil, err
 	}
 	return form, nil
 }
