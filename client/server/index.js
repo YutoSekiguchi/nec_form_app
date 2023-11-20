@@ -47,7 +47,8 @@ server.on('connection', ws => {
         observationForm: {observationTextAreaField1: "", observationTextAreaField2: "", observationTextAreaField3: ""},
         observationResultForm: {observationResultTextAreaField1: "", observationResultTextAreaField2: "", observationResultTextAreaField3: ""},
         ask: {askTextAreaField1: "", askTextAreaField2: "", askTextAreaField3: ""},
-        askResult: {askTextResultAreaField1: "", askTextResultAreaField2: "", askTextResultAreaField3: ""}
+        askResult: {askTextResultAreaField1: "", askTextResultAreaField2: "", askTextResultAreaField3: ""},
+        send: {send: false}
       };
     }
     // 新規接続またはリロード時に現在のフォーム状態を送信
@@ -56,11 +57,13 @@ server.on('connection', ws => {
     if (forms[id][formId]) {
       forms[id][formId] = data;
       // 更新されたデータを全クライアントに送信
+      // if (forms[id]['send'] === false) {
       server.clients.forEach(client => {
         if (client.readyState === WebSocket.OPEN) {
-          client.send(JSON.stringify({ id, formId, data }));
-        }
-      });
+            client.send(JSON.stringify({ id, formId, data }));
+          }
+        });
+      // }
     }
   });
 });

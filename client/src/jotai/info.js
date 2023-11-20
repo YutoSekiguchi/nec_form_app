@@ -1,4 +1,4 @@
 import { atom } from 'jotai'
 
 export const passwordAtom = atom('');
-export const groupNumberAtom = atom(0);
+export const dropDownModeAtom = atom("simple");

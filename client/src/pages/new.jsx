@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import styles from '../styles/Form.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Dialog from '../components/common/dialog';
-import { useAtom } from 'jotai';
-import { groupNumberAtom } from '../jotai/info';
 import { generateRandomString } from '../modules/generate_radom_string';
 import Cookies from 'js-cookie';
 import { getTeams } from '../services/team';
@@ -11,6 +9,8 @@ import { createForm, getFormByLongId } from '../services/form';
 import { useSearchParams } from 'react-router-dom';
 
 const wsurl = process.env.REACT_APP_WS_URL;
+
+let isSend = false;
 
 function New() {
   // 共同編集フォームの状態
@@ -22,13 +22,13 @@ function New() {
   const [firstLoad, setFirstLoad] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [tid, setTid] = useState(null);
-  const [groupNumber, ] = useAtom(groupNumberAtom)
-
+  // const [isSend, setIsSend] = useState(false);
   const [searchParams] = useSearchParams();
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const fid = queryParams.get('id');
+  const groupNumber = queryParams.get('groupNumber');
 
 
   const navigate = useNavigate();
@@ -36,11 +36,31 @@ function New() {
   // WebSocket接続の状態
   const [ws, setWs] = useState(null);
 
+  const getFormData = async (fid) => {
+    const res = await getFormByLongId(fid);
+    if (res === null || res === undefined) {
+      return;
+    }
+    setHypoFormData({hypoInputField: res.Hypothesis});
+    if (res.Observation !== undefined && res.Observation !==  "") {
+      setObservationFormData(JSON.parse(res.Observation));
+    }
+    if (res.ObservationResult !== undefined && res.ObservationResult !== "") {
+      setObservationResultFormData(JSON.parse(res.ObservationResult));
+    }
+    if (res.Hearing !== undefined && res.Hearing !== "") {
+      setAskData(JSON.parse(res.Hearing));
+    }
+    if (res.HearingResult !== undefined && res.HearingResult !== "") {
+      setAskResultData(JSON.parse(res.HearingResult));
+    }
+  }
+
   useEffect(() => {
     // WebSocket接続
     
-    const isLogin = Cookies.get('login');
-    if (isLogin !== "ok") {
+    const isLogin = Cookies.get('groupNumber');
+    if (isLogin === undefined || isLogin === null) {
       navigate(`/`);
       return;
     }
@@ -58,29 +78,11 @@ function New() {
       }
     }
 
-    const getFormData = async () => {
-      const res = await getFormByLongId(fid);
-      if (res === null || res === undefined) {
-        return;
-      }
-      setHypoFormData({hypoInputField: res.Hypothesis});
-      if (res.Observation !== undefined && res.Observation !==  "") {
-        setObservationFormData(JSON.parse(res.Observation));
-      }
-      if (res.ObservationResult !== undefined && res.ObservationResult !== "") {
-        setObservationResultFormData(JSON.parse(res.ObservationResult));
-      }
-      if (res.Hearing !== undefined && res.Hearing !== "") {
-        setAskData(JSON.parse(res.Hearing));
-      }
-      if (res.HearingResult !== undefined && res.HearingResult !== "") {
-        setAskResultData(JSON.parse(res.HearingResult));
-      }
-    }
+    
 
     getTID();
     if (fid !== null) {
-      getFormData();
+      getFormData(fid);
     }
 
     
@@ -112,16 +114,21 @@ function New() {
       } else {
         // 他のクライアントからの更新の処理
         if (id === fid) {
-          if (formId === 'hypoForm') {
-            setHypoFormData(data);
-          } else if (formId === 'observationForm') {
-            setObservationFormData(data);
-          } else if (formId === 'observationResultForm') {
-            setObservationResultFormData(data);
-          } else if (formId === 'ask') {
-            setAskData(data);
-          } else if (formId === "askResult") {
-            setAskResultData(data);
+          if (formId === 'send') {
+            isSend = data["send"];
+          }
+          if (!isSend) {
+            if (formId === 'hypoForm') {
+              setHypoFormData(data);
+            } else if (formId === 'observationForm') {
+              setObservationFormData(data);
+            } else if (formId === 'observationResultForm') {
+              setObservationResultFormData(data);
+            } else if (formId === 'ask') {
+              setAskData(data);
+            } else if (formId === "askResult") {
+              setAskResultData(data);
+            }
           }
         }
       }
@@ -133,12 +140,12 @@ function New() {
     return () => socket.close();
   }, [firstLoad, fid, navigate, groupNumber, searchParams]);
 
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth' // スムーズなスクロール動作
-    });
-  };
+  // const scrollToTop = () => {
+  //   window.scrollTo({
+  //     top: 0,
+  //     behavior: 'smooth' // スムーズなスクロール動作
+  //   });
+  // };
 
   const handleBack = () => {
     navigate(`/home`);
@@ -147,11 +154,13 @@ function New() {
   const handleSubmit = async() => {
     // APIに送るデータの作成
     // 配列は文字列にする
+    await ws.send(JSON.stringify({ id: fid, formId: 'send', data: {send: true} }));
     await ws.send(JSON.stringify({ id: fid, formId: 'hypoForm', data: {} }));
     await ws.send(JSON.stringify({ id: fid, formId: 'observationForm', data: {observationTextAreaField1: "", observationTextAreaField2: "", observationTextAreaField3: ""} }));
     await ws.send(JSON.stringify({ id: fid, formId: 'observationResultForm', data: {observationResultTextAreaField1: "", observationResultTextAreaField2: "", observationResultTextAreaField3: ""} }));
     await ws.send(JSON.stringify({ id: fid, formId: 'ask', data: {askTextAreaField1: "", askTextAreaField2: "", askTextAreaField3: ""} }));
     await ws.send(JSON.stringify({ id: fid, formId: 'askResult', data: {askTextResultAreaField1: "", askTextResultAreaField2: "", askTextResultAreaField3: ""} }));
+    await ws.send(JSON.stringify({ id: fid, formId: 'send', data: {send: false} }));
     const postFormData = {
       LongID: fid,
       TID: tid,
@@ -172,11 +181,12 @@ function New() {
     
     setIsDialogOpen(true);
 
-    scrollToTop();
+    // scrollToTop();
     
-    navigate(`/new?groupNumber=${searchParams.get("groupNumber")}&id=${generateRandomString()}`);
+    // navigate(`/new?groupNumber=${searchParams.get("groupNumber")}&id=${generateRandomString()}`);
     window.setTimeout(() => {
       setIsDialogOpen(false);
+      navigate(`/home`);
     }, 1500);
   }
 

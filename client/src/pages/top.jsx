@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styles from '../styles/Top.module.css';
 import { useNavigate } from 'react-router-dom';
-import { useAtom } from 'jotai';
-import { groupNumberAtom } from '../jotai/info';
 import { createTeam, getTeams } from '../services/team';
 import getTodayDateString from '../modules/generate_today_date';
 import Cookies from 'js-cookie';
 
 function Top() {
   const navigate = useNavigate();
-  const [, setGroupNumber] = useAtom(groupNumberAtom);
 
   const [formData, setFormData] = useState({
     password: '',
@@ -38,9 +35,8 @@ function Top() {
     if (groups !== null) {
       for(var i = 0; i < groups.length; i++) {
         if (groups[i].Name === `${formData.groupNumber}`) {
-          setGroupNumber(formData.groupNumber);
           navigate(`/home`);
-          Cookies.set('login', "ok", { expires: 7 });
+          Cookies.set('groupNumber', formData.groupNumber, { expires: 7 });
           return;
         }
       }
@@ -54,8 +50,7 @@ function Top() {
       alert("作成に失敗しました")
       return;
     }
-    setGroupNumber(formData.groupNumber);
-    Cookies.set('login', "ok", { expires: 7 });
+    Cookies.set('groupNumber', formData.groupNumber, { expires: 7 });
     navigate(`/home`);
   };
 

@@ -1,23 +1,49 @@
 import { useState, useEffect } from 'react';
-import { useAtom } from 'jotai';
 import styles from '../styles/Home.module.css';
 import { useNavigate } from 'react-router-dom';
-import { groupNumberAtom } from '../jotai/info';
 import { generateRandomString } from '../modules/generate_radom_string';
 import Cookies from 'js-cookie';
-import { getForms } from '../services/form';
+import { deleteForm, getForms } from '../services/form';
 import Checkmark from '../components/common/checkmark';
 import { getTeams } from '../services/team';
+import { useAtom } from 'jotai';
+import { dropDownModeAtom } from '../jotai/info';
+import { MaterialSymbolsDeleteOutlineRounded } from '../components/icons/delete';
 
 function Home() {
-  const [groupNumber, ] = useAtom(groupNumberAtom);
   const [forms, setForms] = useState([]);
   const [teams, setTeams] = useState([]);
+  const options = ["simple", "detail"];
+  const [mode, setMode] = useAtom(dropDownModeAtom);// simple or detail
+  const [isOpenDropdown, setIsOpenDropdown] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = () => {
     const id = generateRandomString();
+    const groupNumber = Cookies.get('groupNumber');
+    if (groupNumber === undefined || groupNumber == null) {
+      alert("ログインしなおしてください");
+      navigate("/");
+      return;
+    }
     navigate(`/new?groupNumber=${groupNumber}&id=${id}`);
+  }
+
+  const toggleDropdown = () => setIsOpenDropdown(!isOpenDropdown);
+
+  const changeMode = (option) => {
+    setMode(option);
+    setIsOpenDropdown(false);
+  }
+
+  const confirmDelete = async(e, id) => {
+    e.stopPropagation();
+    if (window.confirm('本当に削除しますか？')) {
+      await deleteForm(id);
+      window.location.reload();
+    } else {
+      return;
+    }
   }
 
   const movePage = (tid, longid) => {
@@ -28,6 +54,16 @@ function Home() {
     navigate(`/new?groupNumber=${teamName}&id=${longid}`);
   }
 
+  const countExistData = (json) => {
+    let count = 0;
+    for (const key in json) {
+      if (json[key] !== "") {
+        count++;
+      }
+    }
+    return count;
+  }
+
   const checkExistData = (json) => {
     for (const key in json) {
       if (json[key] !== "") {
@@ -36,7 +72,6 @@ function Home() {
     }
     return false;
   }
-
 
   const isCheckFillData = (data) => {
     let res = {
@@ -57,8 +92,8 @@ function Home() {
   }
 
   useEffect(() => {
-    const isLogin = Cookies.get('login');
-    if (isLogin !== "ok") {
+    const isLogin = Cookies.get('groupNumber');
+    if (isLogin === undefined && isLogin === null) {
       navigate(`/`);
       return;
     }
@@ -104,10 +139,26 @@ function Home() {
     <div className='home-main'>
       <div className={styles.new_button_container}>
         <div className='text-center'>
-          <h1 className={styles.title}>一覧</h1>
+          <h1 className={styles.title}>グループ{Cookies.get("groupNumber")}の一覧</h1>
         </div>
-        <div className={styles.new_button_wrapper}>
-          <button type="submit" className={styles.new_button} onClick={handleSubmit}>新規作成+</button>
+        <div className={styles.buttons_container}>
+          <div className="dropdown">
+            <button onClick={toggleDropdown} className="dropdown-button">
+              {mode}&nbsp;&nbsp;{isOpenDropdown ? <span className='dark-gray-text'>&#9650;</span> : <span className='dark-gray-text'>&#9660;</span>}
+            </button>
+            {isOpenDropdown && (
+                <div className="dropdown-content">
+                    {options.map((option, index) => (
+                        <div key={index} className="dropdown-item" onClick={() => changeMode(option)}>
+                            {option}
+                        </div>
+                    ))}
+                </div>
+            )}
+          </div>
+          <div className={styles.new_button_wrapper}>
+            <button type="submit" className={styles.new_button} onClick={handleSubmit}>新規作成+</button>
+          </div>
         </div>
         {
           Array.isArray(forms) &&
@@ -115,44 +166,67 @@ function Home() {
             {
               forms.map((form, index) => {
                 return (
-                  <div className={styles.form_container} key={index} onClick={() => movePage(form.TID, form.LongID)}>
-                    <div className={styles.form_left}>
+                  <div key={index}>
+                  {checkTeam(form.TID) === Cookies.get('groupNumber') &&
+                  <div className={mode === "detail"? styles.form_container: styles.short_form_container} onClick={() => movePage(form.TID, form.LongID)}>
+                    <div className={mode === "detail"? styles.form_left: styles.short_form_left}>
                       <div className={styles.form_number}>{index + 1}</div>
-                      <div>
+                      <div className={styles.form_name_wrapper}>
                         <div className={styles.form_name}>仮説: <strong>{form.Hypothesis}</strong></div>
                         {/* <div className={styles.form_name}>グループ: <strong>{form.GroupNumber}</strong></div> */}
                       </div>
                     </div>
-                    <div className={styles.form_description_list}>
-                        <div className={isCheckFillData(form).isObservation ? styles.form_description_comp1: styles.form_description}>
-                        {
-                          isCheckFillData(form).isObservation &&
-                          <Checkmark />
-                        }
-                          観察
+                    {mode === "detail" &&
+                      <div className={styles.form_description_list}>
+                          <div className={isCheckFillData(form).isObservation ? styles.form_description_comp1: styles.form_description}>
+                          {
+                            isCheckFillData(form).isObservation &&
+                            <>
+                              {countExistData(form.Observation)}
+                            </>
+                          }
+                            &nbsp;
+                            観察
+                          </div>
+                          <div className={isCheckFillData(form).isObservationResult ? styles.form_description_comp2: styles.form_description}>
+                          {
+                            isCheckFillData(form).isObservationResult &&
+                            <>
+                              {countExistData(form.ObservationResult)}
+                            </>
+                          }
+                            &nbsp;
+                            観察結果
+                          </div>
+                          <div className={isCheckFillData(form).isHearing ? styles.form_description_comp3: styles.form_description}>
+                          {
+                            isCheckFillData(form).isHearing &&
+                            <>
+                              {countExistData(form.Hearing)}
+                            </>
+                          }
+                            &nbsp;
+                            ヒアリング
+                          </div>
+                          <div className={isCheckFillData(form).isHearingResult ? styles.form_description_comp4: styles.form_description}>
+                          {
+                            isCheckFillData(form).isHearingResult &&
+                            <>
+                              {countExistData(form.HearingResult)}
+                            </>
+                          }
+                            &nbsp;
+                            ヒアリング結果
                         </div>
-                        <div className={isCheckFillData(form).isObservationResult ? styles.form_description_comp2: styles.form_description}>
-                        {
-                          isCheckFillData(form).isObservationResult &&
-                          <Checkmark />
-                        }
-                          観察結果
-                        </div>
-                        <div className={isCheckFillData(form).isHearing ? styles.form_description_comp3: styles.form_description}>
-                        {
-                          isCheckFillData(form).isHearing &&
-                          <Checkmark />
-                        }
-                          ヒアリング
-                        </div>
-                        <div className={isCheckFillData(form).isHearingResult ? styles.form_description_comp4: styles.form_description}>
-                        {
-                          isCheckFillData(form).isHearingResult &&
-                          <Checkmark />
-                        }
-                          ヒアリング結果
+                      </div>
+                    }
+                    <div className={styles.form_right}>
+                      <div className={styles.delete_icon} onClick={(e) => confirmDelete(e, form.ID)}>
+                        <MaterialSymbolsDeleteOutlineRounded />
                       </div>
                     </div>
+                  </div>
+                  }
                   </div>
                 )
               })

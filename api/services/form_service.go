@@ -41,7 +41,7 @@ func (s FormService) Authenticate(authHeader string, db *gorm.DB, c echo.Context
 }
 
 // GET
-// 全てのフォームの取得
+// 全てのフォームの取得（逆順）
 func (s FormService) GetAllForms(db *gorm.DB, c echo.Context) ([]Form, error) {
 	authHeader := c.Request().Header.Get("Authorization")
 	f, err := s.Authenticate(authHeader, db, c)
@@ -49,12 +49,11 @@ func (s FormService) GetAllForms(db *gorm.DB, c echo.Context) ([]Form, error) {
 		return nil, err
 	} else {
 		var forms []Form
-		if err := db.Find(&forms).Error; err != nil {
+		if err := db.Order("created_at desc").Find(&forms).Error; err != nil {
 			return nil, err
 		}
 		return forms, nil
 	}
-
 }
 
 // idを指定してフォームの取得
@@ -74,7 +73,7 @@ func (s FormService) GetFormById(db *gorm.DB, c echo.Context) (Form, error) {
 	return form, nil
 }
 
-// TIDを指定してフォームの取得
+// TIDを指定してフォームの取得（逆順）
 func (s FormService) GetFormByTID(db *gorm.DB, c echo.Context) ([]Form, error) {
 	authHeader := c.Request().Header.Get("Authorization")
 	f, err := s.Authenticate(authHeader, db, c)
@@ -84,7 +83,7 @@ func (s FormService) GetFormByTID(db *gorm.DB, c echo.Context) ([]Form, error) {
 
 	tid := c.Param("tid")
 	var forms []Form
-	if err := db.Where("tid = ?", tid).Find(&forms).Error; err != nil {
+	if err := db.Where("tid = ?", tid).Order("created_at desc").Find(&forms).Error; err != nil {
 		return nil, err
 	}
 	return forms, nil

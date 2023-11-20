@@ -7,13 +7,10 @@
 }
 
 .new_button_wrapper {
-  display: flex;
-  justify-content: end;
-  align-items: center;
+  margin-left: 2rem;
 }
 
 .new_button {
-  margin: 0 2rem 1rem 0;
   padding: 1rem 2rem;
   background-color: #007bff;
   color: white;
@@ -35,7 +32,17 @@
 
 .form_container {
   background-color: #eee;
-  padding: 2rem;
+  padding: 1rem 2rem;
+  margin: 2rem 3rem;
+  border-radius: 1.2rem;
+  display: flex;
+  items-center: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+.short_form_container {
+  background-color: #eee;
+  padding: 1rem 1rem;
   margin: 2rem 3rem;
   border-radius: 1.2rem;
   display: flex;
@@ -48,13 +55,31 @@
   align-items: center;
   width: 60%;
 }
+.short_form_left {
+  display: flex;
+  align-items: center;
+  max-width: 90%;
+}
+.form_right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.form_name_wrapper {
+  width: 100%;
+}
 .form_name {
   font-size: 1.2rem;
   /* font-weight: bold; */
   margin-left: 1rem;
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 }
-.form_description_list {
-
+.delete_icon {
+  color: #E95B6B;
+  font-size: 1.4rem;
 }
 .form_description {
   font-size: 1rem;
@@ -85,4 +110,11 @@
   display: flex;
   align-items: center;
   color: #ff7b00;
+}
+
+.buttons_container {
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  margin: 0 2rem 1rem 0;
 }

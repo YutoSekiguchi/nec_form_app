@@ -74,3 +74,27 @@ export const createForm = async (form) => {
     return null;
   }
 }
+
+// delete
+// idで削除
+export const deleteForm = async (id) => {
+  const url = `${FORM_API_URL}/id/${id}`;
+  try {
+    const base64Credentials = btoa(APP_PASS);
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Basic ${base64Credentials}`,
+      },
+    });
+    if (!response.ok) {
+      console.log(response);
+      return null;
+    }
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("There was an error!", error);
+    return null;
+  }
+}

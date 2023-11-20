@@ -8,7 +8,7 @@ function Dialog({ isOpen, onClose, text, children }) {
     <div className={styles.overlay}>
       <div className={styles.dialog}>
           {text}
-        <button className={styles.closeButton} onClick={onClose}>×</button>
+        {/* <button className={styles.closeButton} onClick={onClose}>×</button> */}
         {children}
       </div>
     </div>
