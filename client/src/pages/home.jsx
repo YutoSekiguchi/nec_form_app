@@ -91,10 +91,20 @@ function Home() {
     }
   }
 
+  const getTID = async (groupNumber) => {
+    const res = await getTeams();
+    for (var i = 0; i < res.length; i++) {
+      if (res[i].Name === groupNumber) {
+        return res[i].ID
+      }
+    }
+    return null;
+  }
+
   const getMyTeamForms = (forms, groupNumber) => {
     const myTeamForms = [];
     for (var i = 0; i < forms.length; i++) {
-      if (checkTeam(forms[i].TID) === groupNumber) {
+      if (checkTeam(forms[i].TID) === getTID(groupNumber)) {
         myTeamForms.push(forms[i]);
       }
     }
@@ -205,7 +215,7 @@ function Home() {
                     {checkTeam(form.TID) === Cookies.get('groupNumber') &&
                     <div className={mode === "detail"? styles.form_container: styles.short_form_container} onClick={() => movePage(form.TID, form.LongID)}>
                       <div className={mode === "detail"? styles.form_left: styles.short_form_left}>
-                        <div className={styles.form_number}>{index + 1}</div>
+                        {/* <div className={styles.form_number}>{index + 1}</div> */}
                         <div className={styles.form_name_wrapper}>
                           <div className={styles.form_name}>仮説: <strong>{form.Hypothesis}</strong></div>
                           {/* <div className={styles.form_name}>グループ: <strong>{form.GroupNumber}</strong></div> */}
