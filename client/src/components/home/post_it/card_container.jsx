@@ -72,6 +72,7 @@ const CardContainer = (props) => {
   useEffect(() => {
     const groupNumber = Cookies.get('groupNumber');
     getTID(groupNumber);
+    console.log(forms)
   }, []);
 
   useEffect(() => {

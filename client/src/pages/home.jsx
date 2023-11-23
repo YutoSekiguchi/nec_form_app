@@ -108,7 +108,6 @@ function Home() {
         myTeamForms.push(forms[i]);
       }
     }
-    console.log(myTeamForms)
     return myTeamForms;
   }
 
