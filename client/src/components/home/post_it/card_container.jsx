@@ -100,7 +100,6 @@ const CardContainer = (props) => {
       },
       color: getFormSettingDataByLongID(form.LongID)?.BackgroundColor || "#000000",
     }));
-    console.log(positionedForms);
     setFormData(positionedForms);
   }, [formSettingData]);
 
