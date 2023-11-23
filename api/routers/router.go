@@ -19,7 +19,7 @@ func InitRouter(db *gorm.DB) {
 	}))
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
-		AllowOrigins: []string{"http://localhost:3000", "http://localhost:7140", "https://vps7.nkmr.io", "http://vps7.nkmr.io"},
+		AllowOrigins: []string{"http://localhost:3000", "http://localhost:7140", "https://vps7.nkmr.io", "http://vps7.nkmr.io", "https://idea.nkmr.io", "http://idea.nkmr.io"},
 		AllowHeaders: []string{echo.HeaderAuthorization, echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
 	}))
 	ctrl := controllers.NewController(db)
