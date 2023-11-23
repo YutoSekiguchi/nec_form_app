@@ -3,7 +3,6 @@ module github.com/YutoSekiguchi/nec-form-app
 go 1.19
 
 require (
-	github.com/labstack/echo v3.3.10+incompatible
 	github.com/labstack/echo/v4 v4.11.3
 	gorm.io/driver/mysql v1.5.2
 	gorm.io/gorm v1.25.5

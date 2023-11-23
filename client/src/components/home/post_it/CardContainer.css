@@ -1,0 +1,156 @@
+/* .draggable-card {
+  width: 8rem; 
+  height: 6rem;
+  background-color: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: move;
+  position: absolute;
+}
+
+#zoom-controls {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+} */
+
+/* カードコンテナのスタイル */
+#card-container {
+  position: relative; /* 子要素の絶対位置を正しく計算するために必要 */
+  width: 7200px; /* コンテナの幅を設定 */
+  height: 7200px; /* コンテナの高さを設定 */
+  overflow: auto; /* 必要に応じてスクロールを許可 */
+  background-color: #eee; /* 背景色を設定 */
+  padding: 20px; /* 内部の余白を設定 */
+  box-sizing: border-box; /* パディングを幅と高さに含める */
+  transform-origin: top left;
+}
+
+.select {
+  cursor: pointer;
+}
+
+.move {
+  cursor: move;
+}
+/* ドラッグ可能なカードのスタイル */
+.draggable-card {
+  width: 8rem; 
+  height: 6rem;
+  color: white; /* テキストカラー */
+  padding: 20px 15px; /* 内部の余白 */
+  border-radius: 5px; /* 角丸の設定 */
+  position: absolute; /* 絶対位置指定 */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex; /* フレックスボックスを使用 */
+  justify-content: center; /* 中央揃え */
+  align-items: center; /* 中央揃え */
+  text-align: center; /* テキストを中央揃え */
+  overflow-y: scroll;
+  word-wrap: break-word; /* 長いテキストを折り返し */
+
+}
+
+#controller-wrapper {
+  position: fixed; /* 固定位置 */
+  top: 20%; /* 下からの位置 */
+  left: 0px; /* 右からの位置 */
+  /* 少し水色の背景色 */
+  background-color: rgba(0, 0, 255, 0.1);
+  /* 右側だけ角丸に */
+  border-top-right-radius: 15px;
+  border-bottom-right-radius:15px;
+}
+
+
+.icon {
+  display: flex;
+  align-items: center;
+  font-size: 1.5rem; /* フォントサイズ */
+  color: #333; /* テキストカラー */
+  padding: 0.5rem 1.2rem; /* 内部の余白 */
+  cursor: pointer;
+}
+
+.selected-icon {
+  display: flex;
+  align-items: center;
+  padding: 0.3rem 0.3rem; /* 内部の余白 */
+  margin: 0.2rem 0.9rem;
+  border-radius: 50%;
+  background-color: white;
+}
+
+#color-controls {
+  /* カラーピッカーと事前定義された色のコントロールのスタイリング */
+  margin-top: 10px;
+  position: absolute;
+  top: -12rem;
+  left: 0rem;
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 255, 0.1);
+  padding: 1rem;
+  border-radius: 5px;
+}
+
+.color-wrapper {
+  /* カラーピッカーのスタイリング */
+  position: relative;
+}
+
+#predefined-colors {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4列のグリッド */
+  gap: 10px; /* グリッドアイテム間の隙間 */
+  padding: 5px; /* コンテナのパディング */
+}
+.color-swatch {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.draggable-card.selected {
+  border: 2px solid #4CA0FF; /* 緑色の枠線 */
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5); /* 影を追加 */
+  z-index: 1;
+}
+
+.card-details {
+  /* スタイリング例 */
+  padding: 0.6rem;
+  background-color: white;
+  border: 1px solid #ddd;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 1rem;
+}
+
+.card-details-content {
+  display: flex;
+  align-items: center;
+}
+
+.card-details-content button {
+  padding: 8px 15px;
+  border: none;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex;
+  align-items: center;
+  margin-right: 1.4rem;
+}
+
+.card-details-content button:hover {
+  background-color: #45a049;
+}
+.delete_icon {
+  color: #E95B6B;
+  font-size: 1.6rem;
+  cursor: pointer;
+}

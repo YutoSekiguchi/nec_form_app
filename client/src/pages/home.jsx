@@ -4,16 +4,16 @@ import { useNavigate } from 'react-router-dom';
 import { generateRandomString } from '../modules/generate_radom_string';
 import Cookies from 'js-cookie';
 import { deleteForm, getForms } from '../services/form';
-import Checkmark from '../components/common/checkmark';
 import { getTeams } from '../services/team';
 import { useAtom } from 'jotai';
 import { dropDownModeAtom } from '../jotai/info';
 import { MaterialSymbolsDeleteOutlineRounded } from '../components/icons/delete';
+import CardContainer from '../components/home/post_it/card_container';
 
 function Home() {
   const [forms, setForms] = useState([]);
   const [teams, setTeams] = useState([]);
-  const options = ["simple", "detail"];
+  const options = ["simple", "detail", "Post-it"];
   const [mode, setMode] = useAtom(dropDownModeAtom);// simple or detail
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
   const navigate = useNavigate();
@@ -91,6 +91,16 @@ function Home() {
     }
   }
 
+  const getMyTeamForms = (forms, groupNumber) => {
+    const myTeamForms = [];
+    for (var i = 0; i < forms.length; i++) {
+      if (checkTeam(forms[i].TID) === groupNumber) {
+        myTeamForms.push(forms[i]);
+      }
+    }
+    return myTeamForms;
+  }
+
   useEffect(() => {
     const isLogin = Cookies.get('groupNumber');
     if (isLogin === undefined && isLogin === null) {
@@ -132,107 +142,135 @@ function Home() {
     
     getFormData();
     getTeamData();
+    scrollToTop();
 
   }, [navigate])
+
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth' // スムーズなスクロール動作
+    });
+  };
 
   return (
     <div className='home-main'>
       <div className={styles.new_button_container}>
-        <div className='text-center'>
-          <h1 className={styles.title}>グループ{Cookies.get("groupNumber")}の一覧</h1>
-        </div>
-        <div className={styles.buttons_container}>
-          <div className="dropdown">
-            <button onClick={toggleDropdown} className="dropdown-button">
-              {mode}&nbsp;&nbsp;{isOpenDropdown ? <span className='dark-gray-text'>&#9650;</span> : <span className='dark-gray-text'>&#9660;</span>}
-            </button>
-            {isOpenDropdown && (
-                <div className="dropdown-content">
-                    {options.map((option, index) => (
-                        <div key={index} className="dropdown-item" onClick={() => changeMode(option)}>
-                            {option}
-                        </div>
-                    ))}
-                </div>
-            )}
+        <div className={styles.fixed}>
+          <div className='text-center'>
+            <h1 className={styles.title}>グループ{Cookies.get("groupNumber")}の一覧</h1>
           </div>
-          <div className={styles.new_button_wrapper}>
-            <button type="submit" className={styles.new_button} onClick={handleSubmit}>新規作成+</button>
+          <div className={styles.buttons_container}>
+            <div className="dropdown">
+              <button onClick={toggleDropdown} className="dropdown-button">
+                {mode}&nbsp;&nbsp;{isOpenDropdown ? <span className='dark-gray-text'>&#9650;</span> : <span className='dark-gray-text'>&#9660;</span>}
+              </button>
+              {isOpenDropdown && (
+                  <div className="dropdown-content">
+                      {options.map((option, index) => (
+                          <div key={index} className="dropdown-item" onClick={() => changeMode(option)}>
+                              {option}
+                          </div>
+                      ))}
+                  </div>
+              )}
+            </div>
+            <div className={styles.new_button_wrapper}>
+              <button type="submit" className={styles.new_button} onClick={handleSubmit}>新規作成+</button>
+            </div>
           </div>
         </div>
+        <div className={styles.container}>
+
         {
-          Array.isArray(forms) &&
-          <div className={styles.forms_container}>
+          mode === "Post-it" && teams?
+          <>
             {
-              forms.map((form, index) => {
-                return (
-                  <div key={index}>
-                  {checkTeam(form.TID) === Cookies.get('groupNumber') &&
-                  <div className={mode === "detail"? styles.form_container: styles.short_form_container} onClick={() => movePage(form.TID, form.LongID)}>
-                    <div className={mode === "detail"? styles.form_left: styles.short_form_left}>
-                      <div className={styles.form_number}>{index + 1}</div>
-                      <div className={styles.form_name_wrapper}>
-                        <div className={styles.form_name}>仮説: <strong>{form.Hypothesis}</strong></div>
-                        {/* <div className={styles.form_name}>グループ: <strong>{form.GroupNumber}</strong></div> */}
-                      </div>
-                    </div>
-                    {mode === "detail" &&
-                      <div className={styles.form_description_list}>
-                          <div className={isCheckFillData(form).isObservation ? styles.form_description_comp1: styles.form_description}>
-                          {
-                            isCheckFillData(form).isObservation &&
-                            <>
-                              {countExistData(form.Observation)}
-                            </>
-                          }
-                            &nbsp;
-                            観察
-                          </div>
-                          <div className={isCheckFillData(form).isObservationResult ? styles.form_description_comp2: styles.form_description}>
-                          {
-                            isCheckFillData(form).isObservationResult &&
-                            <>
-                              {countExistData(form.ObservationResult)}
-                            </>
-                          }
-                            &nbsp;
-                            観察結果
-                          </div>
-                          <div className={isCheckFillData(form).isHearing ? styles.form_description_comp3: styles.form_description}>
-                          {
-                            isCheckFillData(form).isHearing &&
-                            <>
-                              {countExistData(form.Hearing)}
-                            </>
-                          }
-                            &nbsp;
-                            ヒアリング
-                          </div>
-                          <div className={isCheckFillData(form).isHearingResult ? styles.form_description_comp4: styles.form_description}>
-                          {
-                            isCheckFillData(form).isHearingResult &&
-                            <>
-                              {countExistData(form.HearingResult)}
-                            </>
-                          }
-                            &nbsp;
-                            ヒアリング結果
+              Array.isArray(forms) && 
+              <>
+                <CardContainer forms={getMyTeamForms(forms, Cookies.get("groupNumber"))} teams={teams} />
+              </>
+            }
+          </>
+          :
+          <>
+          {
+            Array.isArray(forms) &&
+            <div className={styles.forms_container}>
+              {
+                forms.map((form, index) => {
+                  return (
+                    <div key={index}>
+                    {checkTeam(form.TID) === Cookies.get('groupNumber') &&
+                    <div className={mode === "detail"? styles.form_container: styles.short_form_container} onClick={() => movePage(form.TID, form.LongID)}>
+                      <div className={mode === "detail"? styles.form_left: styles.short_form_left}>
+                        <div className={styles.form_number}>{index + 1}</div>
+                        <div className={styles.form_name_wrapper}>
+                          <div className={styles.form_name}>仮説: <strong>{form.Hypothesis}</strong></div>
+                          {/* <div className={styles.form_name}>グループ: <strong>{form.GroupNumber}</strong></div> */}
                         </div>
                       </div>
-                    }
-                    <div className={styles.form_right}>
-                      <div className={styles.delete_icon} onClick={(e) => confirmDelete(e, form.ID)}>
-                        <MaterialSymbolsDeleteOutlineRounded />
+                      {mode === "detail" &&
+                        <div className={styles.form_description_list}>
+                            <div className={isCheckFillData(form).isObservation ? styles.form_description_comp1: styles.form_description}>
+                            {
+                              isCheckFillData(form).isObservation &&
+                              <>
+                                {countExistData(form.Observation)}
+                              </>
+                            }
+                              &nbsp;
+                              観察
+                            </div>
+                            <div className={isCheckFillData(form).isObservationResult ? styles.form_description_comp2: styles.form_description}>
+                            {
+                              isCheckFillData(form).isObservationResult &&
+                              <>
+                                {countExistData(form.ObservationResult)}
+                              </>
+                            }
+                              &nbsp;
+                              観察結果
+                            </div>
+                            <div className={isCheckFillData(form).isHearing ? styles.form_description_comp3: styles.form_description}>
+                            {
+                              isCheckFillData(form).isHearing &&
+                              <>
+                                {countExistData(form.Hearing)}
+                              </>
+                            }
+                              &nbsp;
+                              ヒアリング
+                            </div>
+                            <div className={isCheckFillData(form).isHearingResult ? styles.form_description_comp4: styles.form_description}>
+                            {
+                              isCheckFillData(form).isHearingResult &&
+                              <>
+                                {countExistData(form.HearingResult)}
+                              </>
+                            }
+                              &nbsp;
+                              ヒアリング結果
+                          </div>
+                        </div>
+                      }
+                      <div className={styles.form_right}>
+                        <div className={styles.delete_icon} onClick={(e) => confirmDelete(e, form.ID)}>
+                          <MaterialSymbolsDeleteOutlineRounded />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  }
-                  </div>
-                )
-              })
-            }
-          </div>
-        }
+                    }
+                    </div>
+                  )
+                })
+              }
+            </div>
+          }
+        </>
+      }
+        </div>
       </div>
     </div>
   );

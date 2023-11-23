@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import styles from '../styles/Form.module.css';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Dialog from '../components/common/dialog';
-import { generateRandomString } from '../modules/generate_radom_string';
 import Cookies from 'js-cookie';
 import { getTeams } from '../services/team';
 import { createForm, getFormByLongId } from '../services/form';
 import { useSearchParams } from 'react-router-dom';
+import { createFormSetting } from '../services/form_setting';
 
 const wsurl = process.env.REACT_APP_WS_URL;
 
@@ -170,10 +170,26 @@ function New() {
       Hearing: JSON.stringify(askData),
       HearingResult: JSON.stringify(askResultData),
     };
+
+    const postFormSettingData = {
+      TID: tid,
+      FormID: fid,
+      FormGroupingID: 0,
+      Color: "#FFFFFF",
+      BackgroundColor: "#000000",
+      PositionTop: Math.random() * 300,
+      PositionLeft: Math.random() * 300,
+    }
     
     // フォームデータを送信
     const res = await createForm(postFormData);
     if (res === null) {
+      alert("送信に失敗しました");
+      return;
+    }
+
+    const formSettingRes = await createFormSetting(postFormSettingData);
+    if (formSettingRes === null) {
       alert("送信に失敗しました");
       return;
     }

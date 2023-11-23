@@ -44,6 +44,16 @@ func InitRouter(db *gorm.DB) {
 		form.DELETE("/id/:id", ctrl.HandleDeleteFormById)
 	}
 
+	form_setting := e.Group("/form_settings")
+	{
+		form_setting.GET("", ctrl.HandleGetAllFormSettings)
+		form_setting.GET("/tid/:tid", ctrl.HandleGetFormSettingsByTID)
+		form_setting.GET("/id/:id", ctrl.HandleGetFormSettingById)
+		form_setting.GET("/form_id/:form_id", ctrl.HandleGetFormSettingByFormID)
+		form_setting.POST("", ctrl.HandleCreateFormSetting)
+		form_setting.DELETE("/id/:id", ctrl.HandleDeleteFormSettingById)
+	}
+
 	// Routing
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, Echo!")
