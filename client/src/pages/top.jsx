@@ -15,7 +15,6 @@ function Top() {
   const [groups, setGroups] = useState(null);
 
   const handleChange = (e) => {
-    console.log(e.target.name);
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   

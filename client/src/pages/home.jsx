@@ -91,23 +91,24 @@ function Home() {
     }
   }
 
-  const getTID = async (groupNumber) => {
-    const res = await getTeams();
-    for (var i = 0; i < res.length; i++) {
-      if (res[i].Name === groupNumber) {
-        return res[i].ID
-      }
-    }
-    return null;
-  }
+  // const getTID = async (groupNumber) => {
+  //   const res = await getTeams();
+  //   for (var i = 0; i < res.length; i++) {
+  //     if (res[i].Name === groupNumber) {
+  //       return res[i].ID
+  //     }
+  //   }
+  //   return null;
+  // }
 
   const getMyTeamForms = (forms, groupNumber) => {
     const myTeamForms = [];
     for (var i = 0; i < forms.length; i++) {
-      if (checkTeam(forms[i].TID) === getTID(groupNumber)) {
+      if (checkTeam(forms[i].TID) === groupNumber) {
         myTeamForms.push(forms[i]);
       }
     }
+    console.log(myTeamForms)
     return myTeamForms;
   }
 
