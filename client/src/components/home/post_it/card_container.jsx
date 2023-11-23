@@ -72,7 +72,6 @@ const CardContainer = (props) => {
   useEffect(() => {
     const groupNumber = Cookies.get('groupNumber');
     getTID(groupNumber);
-    console.log(forms)
   }, []);
 
   useEffect(() => {
@@ -101,6 +100,7 @@ const CardContainer = (props) => {
       },
       color: getFormSettingDataByLongID(form.LongID)?.BackgroundColor || "#000000",
     }));
+    console.log(positionedForms);
     setFormData(positionedForms);
   }, [formSettingData]);
 
@@ -273,7 +273,6 @@ const CardContainer = (props) => {
 
   return (
     <div>
-      {formSettingData &&
       <div
         id="card-container"
         style={{
@@ -303,7 +302,6 @@ const CardContainer = (props) => {
           </div>
         ))}
       </div>
-      }
       {selectedCardId && selectedCardId !== null && (
         <div
           className="card-details"
