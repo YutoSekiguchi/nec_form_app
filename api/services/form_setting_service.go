@@ -20,10 +20,32 @@ func (s FormSettingService) GetAllFormSettings(db *gorm.DB, c echo.Context) ([]F
 // tid一致を全て取得
 func (s FormSettingService) GetFormSettingsByTID(db *gorm.DB, c echo.Context) ([]FormSetting, error) {
 	tid := c.Param("tid")
-	var formSettings []FormSetting
-	if err := db.Where("t_id = ?", tid).Find(&formSettings).Error; err != nil {
+
+	var teamName Team
+	if err := db.Where("id = ?", tid).First(&teamName).Error; err != nil {
 		return nil, err
 	}
+
+	var teams []Team
+	if err := db.Where("name = ?", teamName.Name).Find(&teams).Error; err != nil {
+		return nil, err
+	}
+
+	var formSettings []FormSetting
+	for _, team := range teams {
+		var formSetting []FormSetting
+		if err := db.Where("t_id = ?", team.ID).Find(&formSetting).Error; err != nil {
+			return nil, err
+		}
+
+		formSettings = append(formSettings, formSetting...)
+	}
+
+
+	// var formSettings []FormSetting
+	// if err := db.Where("t_id = ?", tid).Find(&formSettings).Error; err != nil {
+	// 	return nil, err
+	// }
 	return formSettings, nil
 }
 

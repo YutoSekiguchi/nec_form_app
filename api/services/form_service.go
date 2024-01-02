@@ -73,6 +73,7 @@ func (s FormService) GetFormById(db *gorm.DB, c echo.Context) (Form, error) {
 	return form, nil
 }
 
+
 // TIDを指定してフォームの取得（逆順）
 func (s FormService) GetFormByTID(db *gorm.DB, c echo.Context) ([]Form, error) {
 	authHeader := c.Request().Header.Get("Authorization")
@@ -82,11 +83,42 @@ func (s FormService) GetFormByTID(db *gorm.DB, c echo.Context) ([]Form, error) {
 	}
 
 	tid := c.Param("tid")
-	var forms []Form
-	if err := db.Where("tid = ?", tid).Order("created_at desc").Find(&forms).Error; err != nil {
+
+	// tidが一致するteamの名前一覧を取得
+	var teamName Team
+	if err := db.Where("id = ?", tid).First(&teamName).Error; err != nil {
 		return nil, err
 	}
+
+	var teams []Team
+	if err := db.Where("name = ?", teamName.Name).Find(&teams).Error; err != nil {
+		return nil, err
+	}
+
+	// teamのnameが一致するteamのフォーム一覧を取得
+	var forms []Form
+	for _, team := range teams {
+		var form []Form
+		if err := db.Where("tid = ?", team.ID).Order("created_at desc").Find(&form).Error; err != nil {
+			return nil, err
+		}
+		forms = append(forms, form...)
+	}
+	// formsをcreated_atが新しい順に並び替える
+	for i := 0; i < len(forms); i++ {
+		for j := i + 1; j < len(forms); j++ {
+			if forms[i].CreatedAt.Before(forms[j].CreatedAt) {
+				forms[i], forms[j] = forms[j], forms[i]
+			}
+		}
+	}
 	return forms, nil
+
+	// var forms []Form
+	// if err := db.Where("tid = ?", tid).Order("created_at desc").Find(&forms).Error; err != nil {
+	// 	return nil, err
+	// }
+	// return forms, nil
 }
 
 // LongIDを指定してフォームの取得
