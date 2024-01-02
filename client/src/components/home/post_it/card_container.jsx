@@ -15,11 +15,9 @@ import { getTeams } from "../../../services/team";
 
 const CardContainer = (props) => {
   const { forms, teams } = props;
-  // const [newColor, setNewColor] = useState(null);
   const [selectedCard, setSelectedCard] = useState(null);
   const [formData, setFormData] = useState([]);
   const [scale, setScale] = useAtom(scaleAtom);
-  // const [selectedColor, setSelectedColor] = useState('#000000');
   const [selectedCardId, setSelectedCardId] = useState(null); // 選択されているカードのID
   const [openColorPicker, setOpenColorPicker] = useState(false); // カラーピッカーの表示・非表示
   const [cursorMode, setCursorMode] = useState("move"); // カーソルのモード
@@ -109,18 +107,12 @@ const CardContainer = (props) => {
 
   const zoomOut = () => {
     setScale((prevScale) => Math.max(0.1, prevScale - 0.1));
-    // setScale(Math.max(1, scale - 0.1));
   };
 
-  // const addNewColor = () => {
-  //   if (newColor && !predefinedColors.includes(newColor)) {
-  //     setPredefinedColors([...predefinedColors, newColor]);
-  //   }
-  // };
 
   const handleDragStart = (e, card) => {
     if (cursorMode === "select") {
-      return;
+      setCursorMode("move")
     }
     const cardRect = e.target.getBoundingClientRect();
     const offsetX = (e.clientX - cardRect.left) / scale;
@@ -133,7 +125,7 @@ const CardContainer = (props) => {
 
   const handleDrop = async(e) => {
     if (cursorMode === "select") {
-      return;
+      setCursorMode("move")
     }
     e.preventDefault();
     const data = JSON.parse(e.dataTransfer.getData("text/plain"));
@@ -201,7 +193,7 @@ const CardContainer = (props) => {
 
   const handleClickCard = (item, e) => {
     if (cursorMode === "move") {
-      return;
+      setCursorMode("select")
     }
     setSelectedCard(item);
     setSelectedCardId(item.ID);
@@ -255,20 +247,6 @@ const CardContainer = (props) => {
     return null;
   };
 
-  // useEffect(() => {
-  //   const handleClickOutside = (event) => {
-  //     const cardDetails = document.getElementById('card-details');
-
-  //     if (!cardDetails || !cardDetails.contains(event.target)) {
-  //       setSelectedCard(null);
-  //     }
-  //   };
-
-  //   document.addEventListener('mousedown', handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener('mousedown', handleClickOutside);
-  //   };
-  // }, []);
 
   return (
     <div>
