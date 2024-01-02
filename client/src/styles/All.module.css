@@ -1,0 +1,10 @@
+.back_button {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-size: 100% 100%;
+    cursor: pointer;
+    font-size: 12px;
+    color: rgb(14, 165, 233);
+    z-index: 100;
+}
