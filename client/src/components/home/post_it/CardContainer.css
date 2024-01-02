@@ -83,15 +83,13 @@
 }
 
 #color-controls {
-  /* カラーピッカーと事前定義された色のコントロールのスタイリング */
-  margin-top: 10px;
-  position: absolute;
-  top: -12rem;
-  left: 0rem;
+  position: fixed;
+  bottom: 0px;
+  right: 0px;
   display: flex;
   align-items: center;
   background-color: rgba(0, 0, 255, 0.1);
-  padding: 1rem;
+  padding: 0.2rem;
   border-radius: 5px;
 }
 
@@ -121,7 +119,7 @@
 
 .card-details {
   /* スタイリング例 */
-  padding: 0.6rem;
+  padding: 0.2rem 0.3rem;
   background-color: white;
   border: 1px solid #ddd;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
@@ -152,5 +150,7 @@
 .delete_icon {
   color: #E95B6B;
   font-size: 1.6rem;
+  display: flex;
+  align-items: center;
   cursor: pointer;
 }
