@@ -9,6 +9,7 @@ type AllViewSetting struct {
 	TID       int       `gorm:"column:t_id"`
 	LongID    string    `gorm:"column:long_id"`
 	Title     string    `gorm:"column:title"`
+	Image		  string    `gorm:"column:image"`
 	CreatedAt time.Time `sql:"DEFAULT:current_timestamp;column:created_at"`
 	UpdateAt  time.Time `sql:"DEFAULT:current_timestamp;column:update_at"`
 }
