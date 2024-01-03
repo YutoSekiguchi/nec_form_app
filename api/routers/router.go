@@ -54,6 +54,24 @@ func InitRouter(db *gorm.DB) {
 		form_setting.DELETE("/id/:id", ctrl.HandleDeleteFormSettingById)
 	}
 
+	all_view_setting := e.Group("/all_view_settings")
+	{
+		all_view_setting.GET("", ctrl.HandleGetAllAllViewSettings)
+		all_view_setting.GET("/id/:id", ctrl.HandleGetAllViewSettingById)
+		all_view_setting.GET("/long_id/:long_id", ctrl.HandleGetAllViewSettingByLongID)
+		all_view_setting.POST("", ctrl.HandleCreateAllViewSetting)
+		all_view_setting.DELETE("/id/:id", ctrl.HandleDeleteAllViewSettingById)
+	}
+
+	all_view_form_card := e.Group("/all_view_form_cards")
+	{
+		all_view_form_card.GET("", ctrl.HandleGetAllAllViewFormCards)
+		all_view_form_card.GET("/id/:id", ctrl.HandleGetAllViewFormCardById)
+		all_view_form_card.GET("/view_long_id/:view_long_id", ctrl.HandleGetAllViewFormCardByViewLongID)
+		all_view_form_card.POST("", ctrl.HandleCreateAllViewFormCard)
+		all_view_form_card.DELETE("/id/:id", ctrl.HandleDeleteAllViewFormCardById)
+	}
+
 	// Routing
 	e.GET("/", func(c echo.Context) error {
 		return c.String(http.StatusOK, "Hello, Echo!")
