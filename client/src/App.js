@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import New from './pages/new';
 import Home from './pages/home';
 import Top from './pages/top';
-import All from './pages/all';
+import AllView from './pages/all_view';
 
 
 
@@ -17,9 +17,8 @@ function App() {
           {/* フォームのidとgroupのid */}
           <Route path="/" element={<Top />} />
           <Route path="/new" element={<New />} />
-          <Route path="/all" element={<All />} />
+          <Route path="/all/view" element={<AllView />} />
           <Route path="/home" element={<Home />} />
-          {/* <Route path="/weather/:id" element={<Weather />} /> */}
         </Routes>
       </BrowserRouter>
     </div>
