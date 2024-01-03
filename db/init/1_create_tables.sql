@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS all_view_form_cards (
   id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   t_id INT NOT NULL,
   form_id TEXT NOT NULL,
-  view_id TEXT NOT NULL,
+  view_long_id TEXT NOT NULL,
   form_grouping_id INT NOT NULL,
   color TEXT NOT NULL,
   background_color TEXT NOT NULL,
