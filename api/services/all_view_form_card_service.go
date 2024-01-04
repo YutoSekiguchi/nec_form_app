@@ -60,9 +60,9 @@ func (s AllViewFormCardService) CreateAllViewFormCard(db *gorm.DB, c echo.Contex
 		return models.AllViewFormCard{}, err
 	}
 
-	// もしすでに同じlong_idが存在したら上書きする
+	// もしすでに同じlong_idかつform_idが存在したら上書きする
 	var oldAllViewFormCard models.AllViewFormCard
-	if err := db.Where("view_long_id = ?", allViewFormCard.ViewLongID).Find(&oldAllViewFormCard).Error; err != nil {
+	if err := db.Where("view_long_id = ? AND form_id = ?", allViewFormCard.ViewLongID, allViewFormCard.FormID).Find(&oldAllViewFormCard).Error; err != nil {
 		return models.AllViewFormCard{}, err
 	}
 	if oldAllViewFormCard.ID != 0 {
