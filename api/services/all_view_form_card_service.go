@@ -29,11 +29,11 @@ func (s AllViewFormCardService) GetAllViewFormCardById(db *gorm.DB, c echo.Conte
 }
 
 // view_long_idを指定して取得
-func (s AllViewFormCardService) GetAllViewFormCardByViewLongID(db *gorm.DB, c echo.Context) (models.AllViewFormCard, error) {
+func (s AllViewFormCardService) GetAllViewFormCardByViewLongID(db *gorm.DB, c echo.Context) ([]models.AllViewFormCard, error) {
 	viewLongID := c.Param("view_long_id")
-	var allViewFormCard models.AllViewFormCard
-	if err := db.Where("view_long_id = ?", viewLongID).First(&allViewFormCard).Error; err != nil {
-		return models.AllViewFormCard{}, err
+	var allViewFormCard []models.AllViewFormCard
+	if err := db.Where("view_long_id = ?", viewLongID).Find(&allViewFormCard).Error; err != nil {
+		return nil, err
 	}
 	return allViewFormCard, nil
 }
