@@ -11,5 +11,5 @@ type AllViewSetting struct {
 	Title     string    `gorm:"column:title"`
 	Image		  string    `gorm:"column:image"`
 	CreatedAt time.Time `sql:"DEFAULT:current_timestamp;column:created_at"`
-	UpdateAt  time.Time `sql:"DEFAULT:current_timestamp;column:update_at"`
+	UpdatedAt  time.Time `sql:"DEFAULT:current_timestamp;column:updated_at"`
 }
