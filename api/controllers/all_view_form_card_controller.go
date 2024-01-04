@@ -44,6 +44,18 @@ func (ctrl Controller)HandleGetAllViewFormCardByViewLongID(c echo.Context) error
 	}
 }
 
+// HandleGetAllViewFormCardByViewLongIDAndFormID GET /all_view_form_cards/form_id/:form_id/view_long_id/:view_long_id
+func (ctrl Controller)HandleGetAllViewFormCardByViewLongIDAndFormID(c echo.Context) error {
+	var s services.AllViewFormCardService
+	p, err := s.GetAllViewFormCardByViewLongIDAndFormID(ctrl.Db, c)
+	if err != nil {
+		fmt.Println(err)
+		return c.JSON(http.StatusNotFound, err.Error())
+	} else {
+		return c.JSON(200, p)
+	}
+}
+
 
 // HandleCreateAllViewFormCard POST /all_view_form_cards
 func (ctrl Controller)HandleCreateAllViewFormCard(c echo.Context) error {

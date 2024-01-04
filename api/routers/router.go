@@ -68,6 +68,7 @@ func InitRouter(db *gorm.DB) {
 		all_view_form_card.GET("", ctrl.HandleGetAllAllViewFormCards)
 		all_view_form_card.GET("/id/:id", ctrl.HandleGetAllViewFormCardById)
 		all_view_form_card.GET("/view_long_id/:view_long_id", ctrl.HandleGetAllViewFormCardByViewLongID)
+		all_view_form_card.GET("/form_id/:form_id/view_long_id/:view_long_id", ctrl.HandleGetAllViewFormCardByViewLongIDAndFormID)
 		all_view_form_card.POST("", ctrl.HandleCreateAllViewFormCard)
 		all_view_form_card.DELETE("/id/:id", ctrl.HandleDeleteAllViewFormCardById)
 	}
