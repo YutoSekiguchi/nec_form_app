@@ -46,6 +46,9 @@ func (s AllViewFormCardService) GetAllViewFormCardByViewLongIDAndFormID(db *gorm
 	if err := db.Where("view_long_id = ? AND form_id = ?", viewLongID, formID).Find(&allViewFormCard).Error; err != nil {
 		return nil, err
 	}
+	if allViewFormCard.ID == 0 {
+		return nil, nil
+	}
 	return allViewFormCard, nil
 }
 
