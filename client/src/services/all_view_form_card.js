@@ -60,6 +60,26 @@ export const getAllViewFormCardByViewLongId = async (view_long_id) => {
   }
 }
 
+// view_long_idとform_idで取得
+export const getAllViewFormCardByViewLongIdAndFormId = async (view_long_id, form_id) => {
+  const url = `${ALL_VIEW_FORM_CARD_API_URL}/form_id/${form_id}/view_long_id/${view_long_id}`;
+
+  try {
+    const response = await fetch(url, {
+      method: "GET",
+    });
+    if (!response.ok) {
+      console.log(response);
+      return null;
+    }
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("There was an error!", error);
+    return null;
+  }
+}
+
 // POST
 // 新規作成
 export const createAllViewFormCard = async (data) => {
