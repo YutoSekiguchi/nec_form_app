@@ -137,3 +137,14 @@
   align-items: center;
   cursor: pointer;
 }
+
+
+.cardlist-container {
+  position: fixed;
+  top: 0px;
+  right: 0px;
+  width: 300px;
+  height: 100vh;
+  background-color: rgba(127, 127, 127, 0.5);
+  z-index: 100;
+}
