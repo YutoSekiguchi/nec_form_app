@@ -19,11 +19,11 @@ func (s AllViewFormCardService) GetAllAllViewFormCards(db *gorm.DB, c echo.Conte
 }
 
 // idを指定して取得
-func (s AllViewFormCardService) GetAllViewFormCardById(db *gorm.DB, c echo.Context) (models.AllViewFormCard, error) {
+func (s AllViewFormCardService) GetAllViewFormCardById(db *gorm.DB, c echo.Context) (*models.AllViewFormCard, error) {
 	id := c.Param("id")
-	var allViewFormCard models.AllViewFormCard
+	allViewFormCard := new(models.AllViewFormCard)
 	if err := db.First(&allViewFormCard, id).Error; err != nil {
-		return models.AllViewFormCard{}, err
+		return nil, err
 	}
 	return allViewFormCard, nil
 }
@@ -39,12 +39,12 @@ func (s AllViewFormCardService) GetAllViewFormCardByViewLongID(db *gorm.DB, c ec
 }
 
 // view_long_idとform_idを指定して取得
-func (s AllViewFormCardService) GetAllViewFormCardByViewLongIDAndFormID(db *gorm.DB, c echo.Context) (models.AllViewFormCard, error) {
+func (s AllViewFormCardService) GetAllViewFormCardByViewLongIDAndFormID(db *gorm.DB, c echo.Context) (*models.AllViewFormCard, error) {
 	viewLongID := c.Param("view_long_id")
 	formID := c.Param("form_id")
-	var allViewFormCard models.AllViewFormCard
+	allViewFormCard := new(models.AllViewFormCard)
 	if err := db.Where("view_long_id = ? AND form_id = ?", viewLongID, formID).Find(&allViewFormCard).Error; err != nil {
-		return models.AllViewFormCard{}, err
+		return nil, err
 	}
 	return allViewFormCard, nil
 }
