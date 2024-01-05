@@ -55,7 +55,7 @@
   cursor: pointer;
 }
 .short_form_container {
-  background-color: #ddd;
+  background-color: #eee;
   padding: 1rem 1rem;
   margin: 2rem 3rem;
   border-radius: 1.2rem;
@@ -83,13 +83,21 @@
   width: 100%;
 }
 .form_name {
-  font-size: 1.2rem;
+  font-size: 0.8rem;
   /* font-weight: bold; */
   margin-left: 1rem;
   width: 100%;
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
+}
+.detail_form_name {
+  font-size: 0.8rem;
+  /* font-weight: bold; */
+  margin-left: 1rem;
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 .delete_icon {
   color: #E95B6B;
