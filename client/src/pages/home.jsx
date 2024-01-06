@@ -9,11 +9,12 @@ import { useAtom } from 'jotai';
 import { dropDownModeAtom } from '../jotai/info';
 import { MaterialSymbolsDeleteOutlineRounded } from '../components/icons/delete';
 import CardContainer from '../components/home/post_it/card_container';
+import AllTeamsMain from '../components/home/all_teams/main';
 
 function Home() {
   const [forms, setForms] = useState([]);
   const [teams, setTeams] = useState([]);
-  const options = ["simple", "detail", "Post-it"];
+  const options = ["simple", "detail", "Post-it", "All Teams"];
   const [mode, setMode] = useAtom(dropDownModeAtom);// simple or detail
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
   const navigate = useNavigate();
@@ -195,11 +196,23 @@ function Home() {
 
         {
           mode === "Post-it" && teams?
+          // ポストイットモード
           <>
             {
               Array.isArray(forms) && 
               <>
                 <CardContainer forms={getMyTeamForms(forms, Cookies.get("groupNumber"))} teams={teams} />
+              </>
+            }
+          </>
+          :
+          mode === "All Teams" && teams?
+          // 全チームモード
+          <>
+            {
+              Array.isArray(forms) && 
+              <>
+                <AllTeamsMain forms={forms} teams={teams} />
               </>
             }
           </>
@@ -215,10 +228,8 @@ function Home() {
                     {checkTeam(form.TID) === Cookies.get('groupNumber') &&
                     <div className={mode === "detail"? styles.form_container: styles.short_form_container} onClick={() => movePage(form.TID, form.LongID)}>
                       <div className={mode === "detail"? styles.form_left: styles.short_form_left}>
-                        {/* <div className={styles.form_number}>{index + 1}</div> */}
                         <div className={styles.form_name_wrapper}>
-                          <div className={styles.form_name}>仮説: <strong>{form.Hypothesis}</strong></div>
-                          {/* <div className={styles.form_name}>グループ: <strong>{form.GroupNumber}</strong></div> */}
+                          <div className={mode === "detail"? styles.detail_form_name: styles.form_name}>仮説: <strong>{form.Hypothesis}</strong></div>
                         </div>
                       </div>
                       {mode === "detail" &&
