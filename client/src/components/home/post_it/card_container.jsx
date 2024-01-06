@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./CardContainer.css";
 import { ZoomInIcon } from "../../icons/zoomin";
 import { ZoomOutIcon } from "../../icons/zoomout";
@@ -16,7 +16,11 @@ import {
 } from "../../../services/form_setting";
 import Cookies from "js-cookie";
 import { getTeams } from "../../../services/team";
-import { createAllViewFormCard, getAllViewFormCardByViewLongIdAndFormId, getAllViewFormCards } from "../../../services/all_view_form_card";
+import {
+  createAllViewFormCard,
+  getAllViewFormCardByViewLongIdAndFormId,
+  getAllViewFormCards,
+} from "../../../services/all_view_form_card";
 
 const CardContainer = (props) => {
   const { forms, teams, viewID } = props;
@@ -50,7 +54,7 @@ const CardContainer = (props) => {
   const [isOpenCardList, setIsOpenCardList] = useState(true);
   const [teamNameToIdData, setTeamNameToIdData] = useState({}); // teamsのNameが同じもののIDをまとめたjsonの作成, KeyはName, ValueはIDのリスト
   const [displayedTeam, setDisplayedTeam] = useState("All"); // チーム名を表示するかどうか
-  const allTeams = ["1", "2", "3", "4"]
+  const allTeams = ["1", "2", "3", "4"];
 
   const navigate = useNavigate();
 
@@ -105,11 +109,11 @@ const CardContainer = (props) => {
       if (viewID !== undefined) {
         await getAllViewCards();
       } else {
-      if (tid !== null) {
+        if (tid !== null) {
           await getFormSettings(tid);
         }
       }
-    }
+    };
 
     getCardData();
   }, [tid]);
@@ -134,29 +138,30 @@ const CardContainer = (props) => {
           getFormSettingDataByLongID(form.LongID)?.BackgroundColor || "#000000",
       }));
       setFormData(positionedForms);
-  } else {
-    if (formData.length !== 0) {
-      return;
+    } else {
+      if (formData.length !== 0) {
+        return;
+      }
+      const positionedForms = forms.map((form) => ({
+        ...form,
+        position: {
+          left:
+            getAllViewCardByViewLongIdAndFormId(viewID, form.LongID)
+              ?.PositionLeft || Math.random() * (window.innerWidth - 100),
+          top:
+            getAllViewCardByViewLongIdAndFormId(viewID, form.LongID)
+              ?.PositionTop || Math.random() * (window.innerHeight - 100),
+        },
+        color:
+          getAllViewCardByViewLongIdAndFormId(viewID, form.LongID)
+            ?.BackgroundColor || "#000000",
+      }));
+      setFormData(positionedForms);
     }
-    const positionedForms = forms.map((form) => ({
-      ...form,
-      position: {
-        left:
-        getAllViewCardByViewLongIdAndFormId(viewID, form.LongID)?.PositionLeft ||
-          Math.random() * (window.innerWidth - 100),
-        top:
-        getAllViewCardByViewLongIdAndFormId(viewID, form.LongID)?.PositionTop ||
-          Math.random() * (window.innerHeight - 100),
-      },
-      color:
-      getAllViewCardByViewLongIdAndFormId(viewID, form.LongID)?.BackgroundColor || "#000000",
-    }));
-    setFormData(positionedForms);
-  }
   }, [formSettingData]);
 
   useEffect(() => {
-    if(!teams) return;
+    if (!teams) return;
     const teamNameToId = {};
     for (var i = 0; i < teams.length; i++) {
       if (teamNameToId[teams[i]["Name"]] === undefined) {
@@ -165,7 +170,7 @@ const CardContainer = (props) => {
       teamNameToId[teams[i]["Name"]].push(teams[i]["ID"]);
     }
     setTeamNameToIdData(teamNameToId);
-  }, [teams])
+  }, [teams]);
 
   const zoomIn = () => {
     setScale(scale + 0.1);
@@ -232,7 +237,10 @@ const CardContainer = (props) => {
       formSetting.PositionLeft = left;
       await createFormSetting(formSetting);
     } else {
-      const formSetting = await getAllViewFormCardByViewLongIdAndFormId(viewID, data.LongID);
+      const formSetting = await getAllViewFormCardByViewLongIdAndFormId(
+        viewID,
+        data.LongID
+      );
       if (formSetting === null || formSetting === undefined) {
         const postFormSettingData = {
           TID: tid,
@@ -281,7 +289,10 @@ const CardContainer = (props) => {
         formSetting.BackgroundColor = color;
         await createFormSetting(formSetting);
       } else {
-        const formSetting = await getAllViewFormCardByViewLongIdAndFormId(viewID, selectedCard.LongID);
+        const formSetting = await getAllViewFormCardByViewLongIdAndFormId(
+          viewID,
+          selectedCard.LongID
+        );
         if (formSetting === null || formSetting === undefined) {
           const postFormSettingData = {
             TID: tid,
@@ -360,98 +371,18 @@ const CardContainer = (props) => {
 
   const getAllViewCardByViewLongIdAndFormId = (viewLongID, formLongID) => {
     for (var i = 0; i < formSettingData.length; i++) {
-      if (formSettingData[i]["FormID"] === formLongID && formSettingData[i]["ViewLongID"] === viewLongID) {
+      if (
+        formSettingData[i]["FormID"] === formLongID &&
+        formSettingData[i]["ViewLongID"] === viewLongID
+      ) {
         return formSettingData[i];
       }
     }
     return null;
   };
 
-  const CardList = () => {
-    return (
-      <div className="cardlist-container">
-        {
-          isOpenCardList ?
-          <>
-          <div className="cardlist-dialog">
-            <div className="cardlist-container-close-button" onClick={() => {setIsOpenCardList(false)}}>
-              閉じる
-            </div>
-            <div className="cardlist-container-teams">
-              <div className={`cardlist-container-team ${displayedTeam==="All" && "red-bold-text"}`} onClick={() => {setDisplayedTeam("All")}}>All</div>
-              {
-                allTeams.map((team, index) => (
-                  <div className={`cardlist-container-team ${displayedTeam===team && "red-bold-text"}`} key={index} onClick={() => {setDisplayedTeam(team)}}>
-                    {team}
-                  </div>
-                ))
-              }
-            </div>
-          </div>
-        <div className="cardlist">
-          {
-            displayedTeam === "All" ?
-            <>
-            {formData
-              .filter((item) =>
-                !formSettingData.some((setting) => setting.FormID === item.LongID && setting.ViewLongID === viewID)
-              )
-              .map((item, index) => (
-                <div
-                  key={index}
-                  className={`cardlist-container-card ${
-                    item.ID === selectedCardId ? "selected" : ""
-                  } ${cursorMode === "move" ? "move" : "select"}`}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, item)}
-                  onClick={(e) => handleClickCard(item, e)}
-                  style={{
-                    backgroundColor: `${item.color}AA`,
-                  }}
-                >
-                  {item.Hypothesis}
-                </div>
-              ))}
-            </>
-            :
-            <>
-              {formData
-              .filter((item) =>
-                !formSettingData.some((setting) => setting.FormID === item.LongID && setting.ViewLongID === viewID) &&
-                teamNameToIdData[displayedTeam]?.includes(item.TID)
-              )
-              .map((item, index) => (
-                <div
-                  key={index}
-                  className={`cardlist-container-card ${
-                    item.ID === selectedCardId ? "selected" : ""
-                  } ${cursorMode === "move" ? "move" : "select"}`}
-                  draggable
-                  onDragStart={(e) => handleDragStart(e, item)}
-                  onClick={(e) => handleClickCard(item, e)}
-                  style={{
-                    backgroundColor: `${item.color}AA`,
-                  }}
-                >
-                  {item.Hypothesis}
-                </div>
-              ))}
-            </>
-          }
-        </div>
-        </>
-        :
-        <div className="cardlist-container-close-button" onClick={() => {setIsOpenCardList(true)}}>
-          一覧を開く
-        </div>
-          }
-      </div>
-    );
-  };
-
   return (
     <div>
-      {viewID !== undefined && <CardList />}
       <div
         id="card-container"
         style={{
@@ -487,7 +418,11 @@ const CardContainer = (props) => {
           <>
             {formData
               .filter((item) =>
-                formSettingData.some((setting) => setting.FormID === item.LongID && setting.ViewLongID === viewID)
+                formSettingData.some(
+                  (setting) =>
+                    setting.FormID === item.LongID &&
+                    setting.ViewLongID === viewID
+                )
               )
               .map((item, index) => (
                 <div
@@ -552,6 +487,118 @@ const CardContainer = (props) => {
           </div>
         </div>
       </div>
+      {viewID !== undefined && (
+        <div className="cardlist-container">
+          {isOpenCardList ? (
+            <>
+              <div className="cardlist-dialog">
+                <div
+                  className="cardlist-container-close-button"
+                  onClick={() => {
+                    setIsOpenCardList(false);
+                  }}
+                >
+                  閉じる
+                </div>
+                <div className="cardlist-container-teams">
+                  <div
+                    className={`cardlist-container-team ${
+                      displayedTeam === "All" && "red-bold-text"
+                    }`}
+                    onClick={() => {
+                      setDisplayedTeam("All");
+                    }}
+                  >
+                    All
+                  </div>
+                  {allTeams.map((team, index) => (
+                    <div
+                      className={`cardlist-container-team ${
+                        displayedTeam === team && "red-bold-text"
+                      }`}
+                      key={index}
+                      onClick={() => {
+                        setDisplayedTeam(team);
+                      }}
+                    >
+                      {team}
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="cardlist">
+                {displayedTeam === "All" ? (
+                  <>
+                    {formData
+                      .filter(
+                        (item) =>
+                          !formSettingData.some(
+                            (setting) =>
+                              setting.FormID === item.LongID &&
+                              setting.ViewLongID === viewID
+                          )
+                      )
+                      .map((item, index) => (
+                        <div
+                          key={index}
+                          className={`cardlist-container-card ${
+                            item.ID === selectedCardId ? "selected" : ""
+                          } ${cursorMode === "move" ? "move" : "select"}`}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, item)}
+                          onClick={(e) => handleClickCard(item, e)}
+                          style={{
+                            backgroundColor: `${item.color}AA`,
+                          }}
+                        >
+                          {item.Hypothesis}
+                        </div>
+                      ))}
+                  </>
+                ) : (
+                  <>
+                    {formData
+                      .filter(
+                        (item) =>
+                          !formSettingData.some(
+                            (setting) =>
+                              setting.FormID === item.LongID &&
+                              setting.ViewLongID === viewID
+                          ) &&
+                          teamNameToIdData[displayedTeam]?.includes(item.TID)
+                      )
+                      .map((item, index) => (
+                        <div
+                          key={index}
+                          className={`cardlist-container-card ${
+                            item.ID === selectedCardId ? "selected" : ""
+                          } ${cursorMode === "move" ? "move" : "select"}`}
+                          draggable
+                          onDragStart={(e) => handleDragStart(e, item)}
+                          onClick={(e) => handleClickCard(item, e)}
+                          style={{
+                            backgroundColor: `${item.color}AA`,
+                          }}
+                        >
+                          {item.Hypothesis}
+                        </div>
+                      ))}
+                  </>
+                )}
+              </div>
+            </>
+          ) : (
+            <div
+              className="cardlist-container-close-button"
+              onClick={() => {
+                setIsOpenCardList(true);
+              }}
+            >
+              一覧を開く
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
