@@ -142,7 +142,7 @@
 
 .cardlist {
   width: 400px;
-  max-height: 100vh;
+  max-height: 80vh;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
   gap: 20px;
@@ -169,7 +169,6 @@
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   display: flex; /* フレックスボックスを使用 */
   justify-content: center; /* 中央揃え */
-  align-items: center; /* 中央揃え */
   text-align: center; /* テキストを中央揃え */
   overflow-y: scroll;
   word-wrap: break-word; /* 長いテキストを折り返し */

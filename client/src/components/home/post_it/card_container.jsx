@@ -299,6 +299,7 @@ const CardContainer = (props) => {
         formSetting.BackgroundColor = color;
         await createAllViewFormCard(formSetting);
       }
+      setCursorMode("move");
     }
   };
 
