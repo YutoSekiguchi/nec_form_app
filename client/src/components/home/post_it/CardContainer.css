@@ -107,6 +107,7 @@
   border: 1px solid #ddd;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
   border-radius: 1rem;
+  z-index: 1000;
 }
 
 .card-details-content {
@@ -139,12 +140,71 @@
 }
 
 
+.cardlist {
+  width: 400px;
+  max-height: 100vh;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(6rem, 1fr));
+  gap: 20px;
+  z-index: 100;
+  overflow-y: scroll;
+}
+
 .cardlist-container {
+  background-color: rgba(127, 127, 127, 0.5);
   position: fixed;
   top: 0px;
   right: 0px;
-  width: 300px;
-  height: 100vh;
-  background-color: rgba(127, 127, 127, 0.5);
+  overflow-y: scroll;
+  padding: 10px;
   z-index: 100;
+}
+
+.cardlist-container-card {
+  width: 6rem; 
+  height: 5rem;
+  color: white; /* テキストカラー */
+  padding: 20px 15px; /* 内部の余白 */
+  border-radius: 5px; /* 角丸の設定 */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  display: flex; /* フレックスボックスを使用 */
+  justify-content: center; /* 中央揃え */
+  align-items: center; /* 中央揃え */
+  text-align: center; /* テキストを中央揃え */
+  overflow-y: scroll;
+  word-wrap: break-word; /* 長いテキストを折り返し */
+}
+
+.cardlist-container-close-button {
+  color: rgb(14, 65, 133);
+  font-size: 0.85rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+}
+
+.cardlist-container-close-button:hover {
+  color: rgba(14, 65, 133, 0.6);
+}
+
+.cardlist-dialog {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cardlist-container-teams {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.cardlist-container-team {
+  margin-left: 0.5rem;
+  cursor: pointer;
+  color: #666a;
+}
+
+.red-bold-text {
+  color: #E95B6B;
+  font-weight: bold;
 }
