@@ -1,0 +1,110 @@
+.notelist-main-add-item {
+  width: 230px;
+  cursor: pointer;
+  margin: 1rem auto;
+}
+
+.notelist-main-add-item-icon {
+  width: 230px;
+  height: 170px;
+}
+
+.notelist-main-add-item-icon p {
+  width: 100%;
+  height: 100%;
+  font-size: 6rem;
+  font-weight: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0rem;
+}
+
+.notelist-main-add-item-title {
+  color: rgb(14, 165, 233);
+  font-size: 0.7rem/* 12px */;
+  line-height: 1rem;
+  margin-top: 0.5rem;
+  text-align: center;
+}
+
+.all_teams_main {
+  padding-right: 30px;
+  padding-left: 30px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  width: 230px;
+  height: 170px;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  text-align: center;
+  cursor: pointer;
+  margin: 1rem auto;
+}
+
+.card_image {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.card_image img {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.card_detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.card_copy_text {
+  color: rgb(14, 165, 233);
+  font-size: 0.7rem/* 12px */;
+}
+
+.card_copy_text:hover {
+  text-decoration: underline;
+}
+
+.card_title {
+  text-align: center;
+}
+
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.text-center {
+  text-align: center;
+}
+
+
+.view-edit-input {
+  border: none;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background-color 0.3s;
+}
+
+.view-edit-input:focus {
+  background-color: #cccccc;
+  outline: none;
+}
