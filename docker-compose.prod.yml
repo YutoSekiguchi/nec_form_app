@@ -63,6 +63,17 @@ services:
       - "7146:8000"
     networks:
       - nec_form_app
+  
+  viewserver:
+    container_name: nec_form_app-view-server
+    build:
+      context: ./client
+      dockerfile: viewserver.Dockerfile
+    env_file: ./.env
+    ports:
+      - "7147:8001"
+    networks:
+      - nec_form_app
 
 volumes:
   mysql:

@@ -22,6 +22,8 @@ import {
   getAllViewFormCards,
 } from "../../../services/all_view_form_card";
 
+const wsurl = process.env.REACT_APP_WS_VIEW_URL;
+
 const CardContainer = (props) => {
   const { forms, teams, viewID } = props;
   const [selectedCard, setSelectedCard] = useState(null);
@@ -57,6 +59,8 @@ const CardContainer = (props) => {
   const allTeams = ["1", "2", "3", "4"];
 
   const navigate = useNavigate();
+
+  const [socket, setSocket] = useState(null);
 
   const getTID = async (groupNumber) => {
     const res = await getTeams();
@@ -119,10 +123,54 @@ const CardContainer = (props) => {
   }, [tid]);
 
   useEffect(() => {
+    if (viewID === undefined) return;
+    // WebSocket接続の初期化
+    const newSocket = new WebSocket(wsurl);
+    newSocket.onmessage = (event) => {
+      if (event.data instanceof Blob) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            try {
+                const data = JSON.parse(reader.result);
+                if (data.viewID === viewID) {
+                  getAllViewCards();
+                }
+            } catch (error) {
+                console.error('JSON解析エラー:', error);
+            }
+        };
+        reader.readAsText(event.data);
+    } else {
+        try {
+            const data = JSON.parse(event.data);
+            if (data.viewID === viewID) {
+              getAllViewCards();
+            }
+        } catch (error) {
+            console.error('JSON解析エラー:', error);
+        }
+    }
+    };
+    setSocket(newSocket);
+
+    return () => newSocket.close(); // コンポーネントのアンマウント時に接続を閉じる
+}, []);
+
+useEffect(() => {
+  if (socket && viewID !== undefined) {
+      console.log("open socket")
+      socket.onopen = () => {
+          socket.send(JSON.stringify({ type: 'join', viewID }));
+      };
+  }
+}, [socket, viewID]);
+
+
+
+  useEffect(() => {
     if (formSettingData.length === 0) {
       return;
     }
-
     if (viewID === undefined) {
       const positionedForms = forms.map((form) => ({
         ...form,
@@ -139,9 +187,9 @@ const CardContainer = (props) => {
       }));
       setFormData(positionedForms);
     } else {
-      if (formData.length !== 0) {
-        return;
-      }
+      // if (formData.length !== 0) {
+      //   return;
+      // }
       const positionedForms = forms.map((form) => ({
         ...form,
         position: {
@@ -254,14 +302,48 @@ const CardContainer = (props) => {
         };
         await createAllViewFormCard(postFormSettingData);
         getAllViewCards();
+        if (socket && formData.length !== 0 && formSettingData.length !== 0) {
+          if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ 
+              type: 'update', 
+              viewID, 
+              formData: "", // 更新されたformData
+              formSettingData: ""// 更新されたformSettingData
+            }));
+          }
+        }
         return;
       }
       formSetting.PositionTop = top;
       formSetting.PositionLeft = left;
       await createAllViewFormCard(formSetting);
       getAllViewCards();
+      if (socket && formData.length !== 0 && formSettingData.length !== 0) {
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.send(JSON.stringify({ 
+            type: 'update', 
+            viewID, 
+            formData: "", // 更新されたformData
+            formSettingData: "" // 更新されたformSettingData
+          }));
+        }
+      }
     }
   };
+
+
+  // useEffect(() => {
+  //   if (socket && formData.length !== 0 && formSettingData.length !== 0) {
+  //     if (socket.readyState === WebSocket.OPEN) {
+  //       socket.send(JSON.stringify({ 
+  //         type: 'update', 
+  //         viewID, 
+  //         formData: formData, // 更新されたformData
+  //         formSettingData: formSettingData // 更新されたformSettingData
+  //       }));
+  //     }
+  //   }
+  // }, [formData]);
 
   // 選択されたカードの色を更新する関数
   const handleColorChange = async (color) => {
@@ -305,10 +387,30 @@ const CardContainer = (props) => {
             PositionLeft: Math.random() * 300,
           };
           await createAllViewFormCard(postFormSettingData);
+          if (socket && formData.length !== 0 && formSettingData.length !== 0) {
+            if (socket.readyState === WebSocket.OPEN) {
+              socket.send(JSON.stringify({ 
+                type: 'update', 
+                viewID, 
+                formData: "", // 更新されたformData
+                formSettingData: "" // 更新されたformSettingData
+              }));
+            }
+          }
           return;
         }
         formSetting.BackgroundColor = color;
         await createAllViewFormCard(formSetting);
+        if (socket && formData.length !== 0 && formSettingData.length !== 0) {
+          if (socket.readyState === WebSocket.OPEN) {
+            socket.send(JSON.stringify({ 
+              type: 'update', 
+              viewID, 
+              formData: "", // 更新されたformData
+              formSettingData: "" // 更新されたformSettingData
+            }));
+          }
+        }
       }
       setCursorMode("move");
     }
@@ -416,7 +518,7 @@ const CardContainer = (props) => {
           </>
         ) : (
           <>
-            {formData
+            {formSettingData && formData
               .filter((item) =>
                 formSettingData.some(
                   (setting) =>
