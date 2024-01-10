@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 import { useNavigate } from "react-router-dom";
 import { generateRandomString } from "../../../modules/generate_radom_string";
 import { getTeams } from "../../../services/team";
-import { createAllViewSetting, getAllViewSettings } from "../../../services/all_view_setting";
+import { createAllViewSetting, deleteAllViewSetting, getAllViewSettings } from "../../../services/all_view_setting";
 import { createAllViewFormCard, getAllViewFormCardByViewLongId } from "../../../services/all_view_form_card";
 
 const AllTeamsMain = (props) => {
@@ -84,6 +84,13 @@ const AllTeamsMain = (props) => {
     getAllFormSettings();
   }
 
+
+  const handleDeleteView = async (view) => {
+    if (window.confirm("本当に削除しますか？") === false) return;
+    await deleteAllViewSetting(view.ID);
+    alert("削除しました．");
+    getAllFormSettings();
+  }
 
   const AddHistory = () => {
     const handleAddIconClick = async() => {
@@ -181,8 +188,13 @@ const AllTeamsMain = (props) => {
                   </span>
                 )}
               </div>
-              <div className="card_copy_text" onClick={() => handleCopyView(view)}>
-                コピー
+              <div className="flex">
+                <div className="card_copy_text" onClick={() => handleCopyView(view)}>
+                  コピー
+                </div>
+                <div className="card_delete_text" onClick={() => handleDeleteView(view)}>
+                  削除
+                </div>
               </div>
             </div>
           </div>

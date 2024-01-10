@@ -73,9 +73,20 @@
 .card_copy_text {
   color: rgb(14, 165, 233);
   font-size: 0.7rem/* 12px */;
+  margin-right: 0.5rem;
+}
+
+.card_delete_text {
+  color: rgb(233, 14, 14);
+  font-size: 0.7rem/* 12px */;
+  margin-left: 0.5rem;
 }
 
 .card_copy_text:hover {
+  text-decoration: underline;
+}
+
+.card_delete_text:hover {
   text-decoration: underline;
 }
 
@@ -107,4 +118,10 @@
 .view-edit-input:focus {
   background-color: #cccccc;
   outline: none;
+}
+
+.flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
