@@ -5,6 +5,7 @@ import { EditIcon } from "../../icons/edit";
 import "./CardContainer.css";
 
 const CardDetails = ({
+  isView,
   card,
   onEdit,
   onDelete,
@@ -62,13 +63,18 @@ const CardDetails = ({
           </div>
         )}
       </div>
-      <button onClick={() => onEdit(card)}>
-        <EditIcon />
-        編集
-      </button>
-      <div onClick={() => onDelete(card)} className="delete_icon">
-        <MaterialSymbolsDeleteOutlineRounded />
-      </div>
+      {
+        !isView &&
+        <>
+          <button onClick={() => onEdit(card)}>
+            <EditIcon />
+            編集
+          </button>
+          <div onClick={() => onDelete(card)} className="delete_icon">
+            <MaterialSymbolsDeleteOutlineRounded />
+          </div>
+        </>
+      }
     </div>
   );
 };

@@ -557,6 +557,7 @@ useEffect(() => {
           }}
         >
           <CardDetails
+            isView={viewID !== undefined}
             card={selectedCard}
             onEdit={handleEditCard}
             onDelete={handleDeleteCard}
