@@ -8,3 +8,13 @@
     color: rgb(14, 165, 233);
     z-index: 100;
 }
+
+.title {
+    position: fixed;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 16px;
+    color: rgb(14, 14, 14);
+    z-index: 100;
+}

@@ -68,6 +68,15 @@ function AllView() {
         ←戻る
       </div>
       {
+        allViewSetting &&
+        <div className={styles.title}>
+          {allViewSetting.Title
+            ? allViewSetting.Title
+            : `Untitled${allViewSetting.ID}`
+          }
+        </div>
+      }
+      {
         forms.length > 0 &&
         <CardContainer forms={forms} teams={teams} viewID={viewID} />
       }
